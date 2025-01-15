@@ -69,7 +69,7 @@ GlobBranch >> ensureAt: key [
 
 { #category : 'as yet unclassified' }
 GlobBranch >> importTree: anObject [ 
-	^ self 
+	self 
 		importTree: anObject tags: #()
 ]
 
@@ -89,6 +89,28 @@ GlobBranch >> importTree: anObject tags: aCollection [
 GlobBranch >> initialize [ 
 	super initialize.
 	nodes := Dictionary new 
+]
+
+{ #category : 'inspector' }
+GlobBranch >> inspectionEntries [
+	<inspectorPresentationOrder: 0 title: 'global branch'>
+
+	^ SpTablePresenter new
+		items: nodes values;
+		addColumn: (SpStringTableColumn new
+			title: 'key'";
+			width: 30";
+			evaluated: [:each | each inspectionLabel  ])
+]
+
+{ #category : 'accessing' }
+GlobBranch >> inspectionLabel [
+	^ self key 
+]
+
+{ #category : 'as yet unclassified' }
+GlobBranch >> keyOf: aGlobBranch [ 
+	^ nodes keyAtValue: aGlobBranch 
 ]
 
 { #category : 'accessing' }

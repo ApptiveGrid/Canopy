@@ -14,6 +14,11 @@ GlobValueHolder >> / aString [
 	Error signal: 'a value can not be traversed'
 ]
 
+{ #category : 'accessing' }
+GlobValueHolder >> inspectionLabel [ 
+	^ self key , ' = ' , value printString 
+]
+
 { #category : 'actions' }
 GlobValueHolder >> merge: aGlobNode [ 
 	value := aGlobNode value.
@@ -27,7 +32,10 @@ GlobValueHolder >> mergeInto: aGlobValueHolder [
 
 { #category : 'printing' }
 GlobValueHolder >> printOn: aStream [ 
-	aStream << 'value: ' << value printString 
+	super printOn: aStream .
+	aStream << '['.
+	value printOn: aStream.
+	aStream << ']' 
 ]
 
 { #category : 'enumerating' }

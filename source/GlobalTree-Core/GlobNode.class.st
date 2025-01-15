@@ -26,6 +26,18 @@ GlobNode >> initialize [
 	tags := Set new 
 ]
 
+{ #category : 'accessing' }
+GlobNode >> inspectionLabel [
+	self subclassResponsibility 
+]
+
+{ #category : 'accessing' }
+GlobNode >> key [
+	^ parent 
+		ifNotNil: [ parent keyOf: self ]
+		ifNil: [ '/' ]
+]
+
 { #category : 'actions' }
 GlobNode >> merge: aGlobBranch [ 
 	aGlobBranch mergeInto: self 
@@ -34,6 +46,20 @@ GlobNode >> merge: aGlobBranch [
 { #category : 'accessing' }
 GlobNode >> parent: aPNode [
 	parent := aPNode
+]
+
+{ #category : 'printing' }
+GlobNode >> printOn: aStream [ 
+	parent ifNil: [  aStream << '/'. ^ self  ].
+	self printPathOn: aStream 
+]
+
+{ #category : 'printing' }
+GlobNode >> printPathOn: aStream [ 
+	parent ifNil: [^ self ].
+	parent printPathOn: aStream.
+	aStream << '/'.
+	aStream << (parent keyOf: self)
 ]
 
 { #category : 'accessing' }
