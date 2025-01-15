@@ -16,7 +16,8 @@ GlobValueHolder >> / aString [
 
 { #category : 'actions' }
 GlobValueHolder >> merge: aGlobNode [ 
-	value := aGlobNode value 
+	value := aGlobNode value.
+	tags addAll: aGlobNode tags
 ]
 
 { #category : 'as yet unclassified' }

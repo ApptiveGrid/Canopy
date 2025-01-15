@@ -98,6 +98,7 @@ GlobBranch >> keys [
 
 { #category : 'as yet unclassified' }
 GlobBranch >> mergeInto: aGlobBranch [ 
+	aGlobBranch addTags: tags.
 	nodes keysAndValuesDo: [ :key :value |
 		aGlobBranch at: key add: self / key  ]
 ]

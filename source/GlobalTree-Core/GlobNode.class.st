@@ -37,6 +37,11 @@ GlobNode >> parent: aPNode [
 ]
 
 { #category : 'accessing' }
+GlobNode >> tags [
+	^ tags
+]
+
+{ #category : 'accessing' }
 GlobNode >> tags: aCollection [ 
 	tags := aCollection 
 ]
