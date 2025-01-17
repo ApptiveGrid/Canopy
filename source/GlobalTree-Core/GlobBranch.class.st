@@ -18,15 +18,9 @@ GlobBranch >> /+ aString [
 	^ self ensureAt: aString 
 ]
 
-{ #category : 'operations' }
-GlobBranch >> @ anAssociation [ 
-	(self at: anAssociation key ifAbsent: nil)
-		ifNotNil: [ :node | 
-			node value: anAssociation value  ]
-		ifNil: [ 
-			self at: anAssociation key put: anAssociation value ]
-	
-	
+{ #category : 'composition' }
+GlobBranch >> @ aSymbol [
+	^ (self at: aSymbol) value  
 ]
 
 { #category : 'accessing' }
@@ -116,6 +110,11 @@ GlobBranch >> keyOf: aGlobBranch [
 { #category : 'accessing' }
 GlobBranch >> keys [
 	^ nodes keys 
+]
+
+{ #category : 'enumerating' }
+GlobBranch >> keysAndValuesDo: aBlock [ 
+	^ nodes keysAndValuesDo: aBlock 
 ]
 
 { #category : 'as yet unclassified' }
