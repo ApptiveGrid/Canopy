@@ -12,6 +12,6 @@ BaselineOfCanopy >> baseline: spec [
 		for: #common
 		do: [ 
 			spec
-				package: 'GlobalTree-Core';
-				package: 'GlobalTree-Core-Tests' with: [ spec requires: #('GlobalTree-Core') ] ]
+				package: 'Canopy-Core';
+				package: 'Canopy-Core-Tests' with: [ spec requires: #('Canopy-Core') ] ]
 ]
