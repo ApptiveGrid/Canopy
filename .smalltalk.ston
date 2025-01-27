@@ -1,7 +1,7 @@
 SmalltalkCISpec {
   #loading : [
     SCIMetacelloLoadSpec {
-      #baseline : 'GlobalTree',
+      #baseline : 'Canopy',
       #platforms : [ #pharo ],
       #directory : 'source',
       #onConflict : #useIncoming
