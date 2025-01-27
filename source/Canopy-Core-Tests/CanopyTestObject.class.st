@@ -1,47 +1,47 @@
 Class {
-	#name : 'GlobalTreeTestObject',
+	#name : 'CanopyTestObject',
 	#superclass : 'Object',
 	#instVars : [
 		'one',
 		'two',
 		'three'
 	],
-	#category : 'GlobalTree-Core-Tests',
-	#package : 'GlobalTree-Core-Tests'
+	#category : 'Canopy-Core-Tests',
+	#package : 'Canopy-Core-Tests'
 }
 
 { #category : 'accessing' }
-GlobalTreeTestObject >> one [
+CanopyTestObject >> one [
 
 	^ one
 ]
 
 { #category : 'accessing' }
-GlobalTreeTestObject >> one: anObject [
+CanopyTestObject >> one: anObject [
 
 	one := anObject
 ]
 
 { #category : 'accessing' }
-GlobalTreeTestObject >> three [
+CanopyTestObject >> three [
 
 	^ three
 ]
 
 { #category : 'accessing' }
-GlobalTreeTestObject >> three: anObject [
+CanopyTestObject >> three: anObject [
 
 	three := anObject
 ]
 
 { #category : 'accessing' }
-GlobalTreeTestObject >> two [
+CanopyTestObject >> two [
 
 	^ two
 ]
 
 { #category : 'accessing' }
-GlobalTreeTestObject >> two: anObject [
+CanopyTestObject >> two: anObject [
 
 	two := anObject
 ]

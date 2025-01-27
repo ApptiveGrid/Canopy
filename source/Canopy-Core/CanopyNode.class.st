@@ -1,61 +1,61 @@
 Class {
-	#name : 'GlobNode',
+	#name : 'CanopyNode',
 	#superclass : 'Object',
 	#instVars : [
 		'parent',
 		'tags'
 	],
-	#category : 'GlobalTree-Core',
-	#package : 'GlobalTree-Core'
+	#category : 'Canopy-Core',
+	#package : 'Canopy-Core'
 }
 
 { #category : 'accessing' }
-GlobNode >> addTag: aString [ 
+CanopyNode >> addTag: aString [ 
 	tags add: aString 
 ]
 
 { #category : 'accessing' }
-GlobNode >> addTags: aCollection [
+CanopyNode >> addTags: aCollection [
 	aCollection do: [ :each | 
 		self addTag: each  ]
 ]
 
 { #category : 'initialization' }
-GlobNode >> initialize [
+CanopyNode >> initialize [
 	super initialize.
 	tags := Set new 
 ]
 
 { #category : 'accessing' }
-GlobNode >> inspectionLabel [
+CanopyNode >> inspectionLabel [
 	self subclassResponsibility 
 ]
 
 { #category : 'accessing' }
-GlobNode >> key [
+CanopyNode >> key [
 	^ parent 
 		ifNotNil: [ parent keyOf: self ]
 		ifNil: [ '/' ]
 ]
 
 { #category : 'actions' }
-GlobNode >> merge: aGlobBranch [ 
+CanopyNode >> merge: aGlobBranch [ 
 	aGlobBranch mergeInto: self 
 ]
 
 { #category : 'accessing' }
-GlobNode >> parent: aPNode [
+CanopyNode >> parent: aPNode [
 	parent := aPNode
 ]
 
 { #category : 'printing' }
-GlobNode >> printOn: aStream [ 
+CanopyNode >> printOn: aStream [ 
 	parent ifNil: [  aStream << '/'. ^ self  ].
 	self printPathOn: aStream 
 ]
 
 { #category : 'printing' }
-GlobNode >> printPathOn: aStream [ 
+CanopyNode >> printPathOn: aStream [ 
 	parent ifNil: [^ self ].
 	parent printPathOn: aStream.
 	aStream << '/'.
@@ -63,11 +63,11 @@ GlobNode >> printPathOn: aStream [
 ]
 
 { #category : 'accessing' }
-GlobNode >> tags [
+CanopyNode >> tags [
 	^ tags
 ]
 
 { #category : 'accessing' }
-GlobNode >> tags: aCollection [ 
+CanopyNode >> tags: aCollection [ 
 	tags := aCollection 
 ]

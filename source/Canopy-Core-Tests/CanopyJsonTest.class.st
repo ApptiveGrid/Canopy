@@ -1,29 +1,29 @@
 Class {
-	#name : 'GlobalTreeJsonTest',
+	#name : 'CanopyJsonTest',
 	#superclass : 'TestCase',
-	#category : 'GlobalTree-Core-Tests',
-	#package : 'GlobalTree-Core-Tests'
+	#category : 'Canopy-Core-Tests',
+	#package : 'Canopy-Core-Tests'
 }
 
 { #category : 'as yet unclassified' }
-GlobalTreeJsonTest >> sampleJsonConfiguration [
+CanopyJsonTest >> sampleJsonConfiguration [
 	^ '{
 		"one" : "onestring"
 		}'
 ]
 
 { #category : 'tests' }
-GlobalTreeJsonTest >> testReadJson [ 
+CanopyJsonTest >> testReadJson [ 
 	| tree |
-	tree := GlobalTree new importTree: self sampleJsonConfiguration.
+	tree := CanopyTree new importTree: self sampleJsonConfiguration.
 	self assert: (tree / #one) value equals: 'onestring'.
 
 ]
 
 { #category : 'tests' }
-GlobalTreeJsonTest >> testReadJsonTwice [
+CanopyJsonTest >> testReadJsonTwice [
 	| tree |
-	tree := GlobalTree new importTree: self sampleJsonConfiguration.
+	tree := CanopyTree new importTree: self sampleJsonConfiguration.
 	self assert: (tree / #one) value equals: 'onestring'.
 	tree importTree: '{
 		"one" : "one new string",
@@ -38,9 +38,9 @@ GlobalTreeJsonTest >> testReadJsonTwice [
 ]
 
 { #category : 'tests' }
-GlobalTreeJsonTest >> testReadJsonTwiceWithTags [
+CanopyJsonTest >> testReadJsonTwiceWithTags [
 	| tree |
-	tree := GlobalTree new 
+	tree := CanopyTree new 
 		importTree: self sampleJsonConfiguration
 		tags: #( first ) .
 	self assert: (tree / #one) value equals: 'onestring'.

@@ -1,43 +1,56 @@
 Class {
-	#name : 'GlobBranch',
-	#superclass : 'GlobNode',
+	#name : 'CanopyBranch',
+	#superclass : 'CanopyNode',
 	#instVars : [
 		'nodes'
 	],
-	#category : 'GlobalTree-Core',
-	#package : 'GlobalTree-Core'
+	#category : 'Canopy-Core',
+	#package : 'Canopy-Core'
 }
 
+{ #category : 'copying' }
+CanopyBranch >> , aGlobBranch [ 
+	aGlobBranch addAllTo: self 
+]
+
 { #category : 'arithmetic' }
-GlobBranch >> / aString [ 
+CanopyBranch >> / aString [ 
 	^ self at: aString 
 ]
 
 { #category : 'arithmetic' }
-GlobBranch >> /+ aString [ 
+CanopyBranch >> /+ aString [ 
 	^ self ensureAt: aString 
 ]
 
-{ #category : 'operations' }
-GlobBranch >> @ anAssociation [ 
-	(self at: anAssociation key ifAbsent: nil)
-		ifNotNil: [ :node | 
-			node value: anAssociation value  ]
-		ifNil: [ 
-			self at: anAssociation key put: anAssociation value ]
-	
-	
+{ #category : 'composition' }
+CanopyBranch >> @ aSymbol [
+	^ (self at: aSymbol) value  
+]
+
+{ #category : 'adding' }
+CanopyBranch >> addAllTo: aGlobBranch [ 
+	self mergeInto: aGlobBranch 
+]
+
+{ #category : 'target resize' }
+CanopyBranch >> apply: aGlobBranch [ 
+	aGlobBranch keysAndValuesDo: [ :key : value |
+		(value isKindOf: CanopyBranch)
+			ifTrue: [ (nodes at: key) apply: value ]
+			ifFalse: [ (nodes at: key) value: value value ]
+		 ]
 ]
 
 { #category : 'accessing' }
-GlobBranch >> at: key [ 
+CanopyBranch >> at: key [ 
 	^ nodes 
 		at: key 
 		ifAbsent: [ NotFound signal: 'cannot find key ', key asString , ' in ', self printString ]
 ]
 
 { #category : 'accessing' }
-GlobBranch >> at: aString add: aGlobBranch [ 
+CanopyBranch >> at: aString add: aGlobBranch [ 
 	nodes  
 		at: aString 
 		ifPresent: [ :value | value merge: aGlobBranch ]
@@ -45,38 +58,38 @@ GlobBranch >> at: aString add: aGlobBranch [
 ]
 
 { #category : 'accessing' }
-GlobBranch >> at: aString ifAbsent: aBlock [ 
+CanopyBranch >> at: aString ifAbsent: aBlock [ 
 	^ nodes 
 		at: aString 
 		ifAbsent: aBlock 
 ]
 
 { #category : 'accessing' }
-GlobBranch >> at: key put: value [ 
-	(value isKindOf: GlobNode) ifTrue: [  
+CanopyBranch >> at: key put: value [ 
+	(value isKindOf: CanopyNode) ifTrue: [  
 		value parent: self ].
 	nodes at: key put: value.
 	^ value 
 ]
 
 { #category : 'accessing' }
-GlobBranch >> ensureAt: key [ 
+CanopyBranch >> ensureAt: key [ 
 	^ nodes 
 		at: key 
 		ifAbsent: [ 
-			self at: key put: GlobBranch new ]
+			self at: key put: CanopyBranch new ]
 ]
 
 { #category : 'as yet unclassified' }
-GlobBranch >> importTree: anObject [ 
+CanopyBranch >> importTree: anObject [ 
 	self 
 		importTree: anObject tags: #()
 ]
 
 { #category : 'as yet unclassified' }
-GlobBranch >> importTree: anObject tags: aCollection [
+CanopyBranch >> importTree: anObject tags: aCollection [
 	| tree |
-	tree := anObject asGlobalTree.
+	tree := anObject asCanopy.
 	tree recursiveDo: [ :each | each addTags: aCollection ].
 	self merge: tree.
 	"tree keys do: [ :key | 
@@ -86,13 +99,13 @@ GlobBranch >> importTree: anObject tags: aCollection [
 ]
 
 { #category : 'initialization' }
-GlobBranch >> initialize [ 
+CanopyBranch >> initialize [ 
 	super initialize.
 	nodes := Dictionary new 
 ]
 
 { #category : 'inspector' }
-GlobBranch >> inspectionEntries [
+CanopyBranch >> inspectionEntries [
 	<inspectorPresentationOrder: 0 title: 'global branch'>
 
 	^ SpTablePresenter new
@@ -104,29 +117,34 @@ GlobBranch >> inspectionEntries [
 ]
 
 { #category : 'accessing' }
-GlobBranch >> inspectionLabel [
+CanopyBranch >> inspectionLabel [
 	^ self key 
 ]
 
 { #category : 'as yet unclassified' }
-GlobBranch >> keyOf: aGlobBranch [ 
+CanopyBranch >> keyOf: aGlobBranch [ 
 	^ nodes keyAtValue: aGlobBranch 
 ]
 
 { #category : 'accessing' }
-GlobBranch >> keys [
+CanopyBranch >> keys [
 	^ nodes keys 
 ]
 
+{ #category : 'enumerating' }
+CanopyBranch >> keysAndValuesDo: aBlock [ 
+	^ nodes keysAndValuesDo: aBlock 
+]
+
 { #category : 'as yet unclassified' }
-GlobBranch >> mergeInto: aGlobBranch [ 
+CanopyBranch >> mergeInto: aGlobBranch [ 
 	aGlobBranch addTags: tags.
 	nodes keysAndValuesDo: [ :key :value |
 		aGlobBranch at: key add: self / key  ]
 ]
 
 { #category : 'enumerating' }
-GlobBranch >> recursiveDo: aBlock [ 
+CanopyBranch >> recursiveDo: aBlock [ 
 	aBlock value: self.
 	nodes do: [ :each | 
 		each recursiveDo: aBlock  ] 
@@ -134,7 +152,7 @@ GlobBranch >> recursiveDo: aBlock [
 ]
 
 { #category : 'accessing' }
-GlobBranch >> tags: aCollection [
+CanopyBranch >> tags: aCollection [
 	nodes valuesDo: [ :each |
 		each tags: aCollection ]
 ]

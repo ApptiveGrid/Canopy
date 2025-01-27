@@ -1,37 +1,37 @@
 Class {
-	#name : 'GlobValueHolder',
-	#superclass : 'GlobNode',
+	#name : 'CanopyValueHolder',
+	#superclass : 'CanopyNode',
 	#instVars : [
 		'value',
 		'dependent'
 	],
-	#category : 'GlobalTree-Core',
-	#package : 'GlobalTree-Core'
+	#category : 'Canopy-Core',
+	#package : 'Canopy-Core'
 }
 
 { #category : 'arithmetic' }
-GlobValueHolder >> / aString [ 
+CanopyValueHolder >> / aString [ 
 	Error signal: 'a value can not be traversed'
 ]
 
 { #category : 'accessing' }
-GlobValueHolder >> inspectionLabel [ 
+CanopyValueHolder >> inspectionLabel [ 
 	^ self key , ' = ' , value printString 
 ]
 
 { #category : 'actions' }
-GlobValueHolder >> merge: aGlobNode [ 
+CanopyValueHolder >> merge: aGlobNode [ 
 	value := aGlobNode value.
 	tags addAll: aGlobNode tags
 ]
 
 { #category : 'as yet unclassified' }
-GlobValueHolder >> mergeInto: aGlobValueHolder [ 
+CanopyValueHolder >> mergeInto: aGlobValueHolder [ 
 	self error: 'cponflict'
 ]
 
 { #category : 'printing' }
-GlobValueHolder >> printOn: aStream [ 
+CanopyValueHolder >> printOn: aStream [ 
 	super printOn: aStream .
 	aStream << '['.
 	value printOn: aStream.
@@ -39,29 +39,29 @@ GlobValueHolder >> printOn: aStream [
 ]
 
 { #category : 'enumerating' }
-GlobValueHolder >> recursiveDo: aBlock [ 
+CanopyValueHolder >> recursiveDo: aBlock [ 
 	aBlock value: self 
 ]
 
 { #category : 'registry' }
-GlobValueHolder >> register: aPTAccessor [ 
+CanopyValueHolder >> register: aPTAccessor [ 
 	value
 		ifNotNil: [ aPTAccessor value: value ]
 		ifNil: [ dependent := aPTAccessor ]
 ]
 
 { #category : 'accessing' }
-GlobValueHolder >> tags: aCollection [ 
+CanopyValueHolder >> tags: aCollection [ 
 	tags ifNil: [ tags := Set new ].
 	tags addAll: aCollection 
 ]
 
 { #category : 'evaluating' }
-GlobValueHolder >> value [ 
+CanopyValueHolder >> value [ 
 	^ value 
 ]
 
 { #category : 'accessing' }
-GlobValueHolder >> value: anObject [  
+CanopyValueHolder >> value: anObject [  
 	value := anObject 
 ]

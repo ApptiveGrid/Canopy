@@ -1,12 +1,12 @@
 Class {
-	#name : 'BaselineOfGlobalTree',
+	#name : 'BaselineOfCanopy',
 	#superclass : 'BaselineOf',
-	#category : 'BaselineOfGlobalTree',
-	#package : 'BaselineOfGlobalTree'
+	#category : 'BaselineOfCanopy',
+	#package : 'BaselineOfCanopy'
 }
 
 { #category : 'baselines' }
-BaselineOfGlobalTree >> baseline: spec [
+BaselineOfCanopy >> baseline: spec [
 	<baseline>
 	spec
 		for: #common

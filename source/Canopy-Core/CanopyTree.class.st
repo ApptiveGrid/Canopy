@@ -1,33 +1,33 @@
 Class {
-	#name : 'GlobalTree',
-	#superclass : 'GlobBranch',
+	#name : 'CanopyTree',
+	#superclass : 'CanopyBranch',
 	#instVars : [
 		'root'
 	],
 	#classInstVars : [
 		'instance'
 	],
-	#category : 'GlobalTree-Core',
-	#package : 'GlobalTree-Core'
+	#category : 'Canopy-Core',
+	#package : 'Canopy-Core'
 }
 
 { #category : 'arithmetic' }
-GlobalTree class >> / aString [ 
+CanopyTree class >> / aString [ 
 	^ self instance / aString 
 ]
 
 { #category : 'arithmetic' }
-GlobalTree class >> /+ aString [ 
+CanopyTree class >> /+ aString [ 
 	^ self instance /+ aString 
 ]
 
 { #category : 'accessing' }
-GlobalTree class >> instance [ 
+CanopyTree class >> instance [ 
 	^ instance ifNil: [ 
 		instance := self new  ]
 ]
 
 { #category : 'initialization' }
-GlobalTree class >> reset [ 
+CanopyTree class >> reset [ 
 	instance := nil 
 ]
