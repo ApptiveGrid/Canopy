@@ -20,3 +20,9 @@ Object >> canopyMapping [
 		map: CanopyBranchNode new;
 		build
 ]
+
+{ #category : '*Canopy-Core' }
+Object >> canopySetupFrom: anObject [ 
+	self canopyMapping 
+		apply: anObject asCanopy 
+]
