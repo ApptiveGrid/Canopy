@@ -15,7 +15,7 @@ CanopyMappingBuilder class >> build: anObject [
 ]
 
 { #category : 'adding' }
-CanopyMappingBuilder >> add: anObject [
+CanopyMappingBuilder >> addMapping: anObject [
 	self class new 
 		object: anObject;
 		map: map;
@@ -23,7 +23,7 @@ CanopyMappingBuilder >> add: anObject [
 ]
 
 { #category : 'accessing' }
-CanopyMappingBuilder >> at: aString putNested: anObject [
+CanopyMappingBuilder >> at: aString addMapping: anObject [
 	| value |
 	value := self class new
 		object: anObject;
@@ -47,18 +47,20 @@ CanopyMappingBuilder >> build [
 CanopyMappingBuilder >> buildComplexProperties [
 	| pragmas |
 	pragmas := Pragma 
-		allNamed: #globalTreeMap
+		allNamed: #canopyMapping
 		from: object class 
 		to: Object.
 	(pragmas size = 1) ifTrue: [ 
-		object perform: pragmas first selector asMutator with: self ]
+		object 
+			perform: pragmas first selector asMutator 
+			with: self ]
 ]
 
 { #category : 'as yet unclassified' }
 CanopyMappingBuilder >> buildLocalProperties [
 	| pragmas |
 	pragmas := Pragma 
-		allNamed: #globalTreeValue:type:
+		allNamed: #canopyValue:type:
 		from: object class 
 		to: Object.
 	(pragmas size > 0) ifTrue: [ 

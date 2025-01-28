@@ -10,7 +10,7 @@ Class {
 
 { #category : 'copying' }
 CanopyBranch >> , aGlobBranch [ 
-	aGlobBranch addAllTo: self 
+	aGlobBranch mergeInto: self 
 ]
 
 { #category : 'arithmetic' }
@@ -26,11 +26,6 @@ CanopyBranch >> /+ aString [
 { #category : 'composition' }
 CanopyBranch >> @ aSymbol [
 	^ (self at: aSymbol) value  
-]
-
-{ #category : 'adding' }
-CanopyBranch >> addAllTo: aGlobBranch [ 
-	self mergeInto: aGlobBranch 
 ]
 
 { #category : 'target resize' }

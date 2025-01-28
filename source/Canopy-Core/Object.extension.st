@@ -12,3 +12,11 @@ Object >> canopyBind: aPTGroup keys: aCollection [
 			object: self;
 			selector: accessor) ]
 ]
+
+{ #category : '*Canopy-Core' }
+Object >> canopyMapping [
+	^ CanopyMappingBuilder new 
+		object: self;
+		map: CanopyBranch new;
+		build
+]
