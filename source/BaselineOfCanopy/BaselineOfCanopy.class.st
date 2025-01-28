@@ -13,5 +13,6 @@ BaselineOfCanopy >> baseline: spec [
 		do: [ 
 			spec
 				package: 'Canopy-Core';
+				package: 'Canopy-Metrics'  with: [ spec requires: #('Canopy-Core') ];
 				package: 'Canopy-Core-Tests' with: [ spec requires: #('Canopy-Core') ] ]
 ]
