@@ -15,7 +15,7 @@ CanopyJsonTest >> sampleJsonConfiguration [
 { #category : 'tests' }
 CanopyJsonTest >> testReadJson [ 
 	| tree |
-	tree := CanopyTree new importTree: self sampleJsonConfiguration.
+	tree := Canopy new importTree: self sampleJsonConfiguration.
 	self assert: (tree / #one) value equals: 'onestring'.
 
 ]
@@ -23,7 +23,7 @@ CanopyJsonTest >> testReadJson [
 { #category : 'tests' }
 CanopyJsonTest >> testReadJsonTwice [
 	| tree |
-	tree := CanopyTree new importTree: self sampleJsonConfiguration.
+	tree := Canopy new importTree: self sampleJsonConfiguration.
 	self assert: (tree / #one) value equals: 'onestring'.
 	tree importTree: '{
 		"one" : "one new string",
@@ -40,7 +40,7 @@ CanopyJsonTest >> testReadJsonTwice [
 { #category : 'tests' }
 CanopyJsonTest >> testReadJsonTwiceWithTags [
 	| tree |
-	tree := CanopyTree new 
+	tree := Canopy new 
 		importTree: self sampleJsonConfiguration
 		tags: #( first ) .
 	self assert: (tree / #one) value equals: 'onestring'.

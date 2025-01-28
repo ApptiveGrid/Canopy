@@ -22,5 +22,5 @@ CanopyTestServer >> port: anObject [
 
 { #category : 'as yet unclassified' }
 CanopyTestServer >> setupConfiguration [ 
-	self canopyBind: CanopyTree apptiveGrid / #httpServer keys: #( port ) 
+	self canopyBind: Canopy apptiveGrid / #httpServer keys: #( port ) 
 ]

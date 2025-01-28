@@ -30,9 +30,7 @@ CanopyMappingBuilder >> at: aString addMapping: anObject [
 		map: CanopyBranchNode new;
 		build.
 	
-	map 
-		at: aString 
-		put: value
+	(map /+ aString) merge: value 
 ]
 
 { #category : 'instance creation' }
@@ -72,10 +70,17 @@ CanopyMappingBuilder >> buildLocalProperties [
 					initializeFromPragma: pragma) ] ].
 ]
 
+{ #category : 'initialization' }
+CanopyMappingBuilder >> initialize [ 
+	super initialize.
+	map := CanopyBranchNode new.
+]
+
 { #category : 'accessing' }
 CanopyMappingBuilder >> map [
 
-	^ map
+	^ map ifNil: [ 
+		map := Dictionary new ]
 ]
 
 { #category : 'accessing' }
