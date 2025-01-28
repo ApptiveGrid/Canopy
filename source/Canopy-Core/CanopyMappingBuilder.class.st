@@ -27,7 +27,7 @@ CanopyMappingBuilder >> at: aString addMapping: anObject [
 	| value |
 	value := self class new
 		object: anObject;
-		map: CanopyBranch new;
+		map: CanopyBranchNode new;
 		build.
 	
 	map 
@@ -60,16 +60,16 @@ CanopyMappingBuilder >> buildComplexProperties [
 CanopyMappingBuilder >> buildLocalProperties [
 	| pragmas |
 	pragmas := Pragma 
-		allNamed: #canopyValue:type:
+		allNamed: #canopyValue:type:arguments:
 		from: object class 
 		to: Object.
 	(pragmas size > 0) ifTrue: [ 
 		pragmas do: [ :pragma | 
 			map 
 				at: (pragma arguments first)
-				put: (CanopyAccessor new 
+				put: ((CanopyLeafNode withType: pragma arguments second) new 
 					object: object;
-					selector: pragma method selector) ] ].
+					initializeFromPragma: pragma) ] ].
 ]
 
 { #category : 'accessing' }

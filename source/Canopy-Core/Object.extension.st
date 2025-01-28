@@ -2,7 +2,7 @@ Extension { #name : 'Object' }
 
 { #category : '*Canopy-Core' }
 Object >> asCanopyValue [
-	^ CanopyValueHolder new value: self 
+	^ CanopyValue new value: self 
 ]
 
 { #category : '*Canopy-Core' }
@@ -17,6 +17,6 @@ Object >> canopyBind: aPTGroup keys: aCollection [
 Object >> canopyMapping [
 	^ CanopyMappingBuilder new 
 		object: self;
-		map: CanopyBranch new;
+		map: CanopyBranchNode new;
 		build
 ]

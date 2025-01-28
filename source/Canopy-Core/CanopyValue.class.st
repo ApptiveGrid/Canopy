@@ -1,6 +1,6 @@
 Class {
-	#name : 'CanopyValueHolder',
-	#superclass : 'CanopyNode',
+	#name : 'CanopyValue',
+	#superclass : 'CanopyLeafNode',
 	#instVars : [
 		'value',
 		'dependent'
@@ -9,59 +9,49 @@ Class {
 	#package : 'Canopy-Core'
 }
 
-{ #category : 'arithmetic' }
-CanopyValueHolder >> / aString [ 
-	Error signal: 'a value can not be traversed'
-]
-
 { #category : 'accessing' }
-CanopyValueHolder >> inspectionLabel [ 
-	^ self key , ' = ' , value printString 
+CanopyValue class >> type [ 
+	^ #value
 ]
 
 { #category : 'actions' }
-CanopyValueHolder >> merge: aGlobNode [ 
+CanopyValue >> merge: aGlobNode [ 
 	value := aGlobNode value.
 	tags addAll: aGlobNode tags
 ]
 
 { #category : 'as yet unclassified' }
-CanopyValueHolder >> mergeInto: aGlobValueHolder [ 
+CanopyValue >> mergeInto: aGlobValueHolder [ 
 	self error: 'cponflict'
 ]
 
 { #category : 'printing' }
-CanopyValueHolder >> printOn: aStream [ 
+CanopyValue >> printOn: aStream [ 
 	super printOn: aStream .
 	aStream << '['.
 	value printOn: aStream.
 	aStream << ']' 
 ]
 
-{ #category : 'enumerating' }
-CanopyValueHolder >> recursiveDo: aBlock [ 
-	aBlock value: self 
-]
-
 { #category : 'registry' }
-CanopyValueHolder >> register: aPTAccessor [ 
+CanopyValue >> register: aPTAccessor [ 
 	value
 		ifNotNil: [ aPTAccessor value: value ]
 		ifNil: [ dependent := aPTAccessor ]
 ]
 
 { #category : 'accessing' }
-CanopyValueHolder >> tags: aCollection [ 
+CanopyValue >> tags: aCollection [ 
 	tags ifNil: [ tags := Set new ].
 	tags addAll: aCollection 
 ]
 
 { #category : 'evaluating' }
-CanopyValueHolder >> value [ 
+CanopyValue >> value [ 
 	^ value 
 ]
 
 { #category : 'accessing' }
-CanopyValueHolder >> value: anObject [  
+CanopyValue >> value: anObject [  
 	value := anObject 
 ]

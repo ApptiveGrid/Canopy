@@ -3,7 +3,8 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'parent',
-		'tags'
+		'tags',
+		'properties'
 	],
 	#category : 'Canopy-Core',
 	#package : 'Canopy-Core'
@@ -23,11 +24,17 @@ CanopyNode >> addTags: aCollection [
 { #category : 'initialization' }
 CanopyNode >> initialize [
 	super initialize.
-	tags := Set new 
+	tags := Set new.
+	properties := Dictionary new 
 ]
 
 { #category : 'accessing' }
-CanopyNode >> inspectionLabel [
+CanopyNode >> inspectionKey [
+	self subclassResponsibility 
+]
+
+{ #category : 'accessing' }
+CanopyNode >> inspectionValue [
 	self subclassResponsibility 
 ]
 
@@ -60,6 +67,11 @@ CanopyNode >> printPathOn: aStream [
 	parent printPathOn: aStream.
 	aStream << '/'.
 	aStream << (parent keyOf: self)
+]
+
+{ #category : 'accessing' }
+CanopyNode >> properties [ 
+	^ properties 
 ]
 
 { #category : 'accessing' }

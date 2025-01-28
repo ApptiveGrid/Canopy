@@ -1,6 +1,6 @@
 Class {
 	#name : 'CanopyTree',
-	#superclass : 'CanopyBranch',
+	#superclass : 'CanopyBranchNode',
 	#instVars : [
 		'root'
 	],

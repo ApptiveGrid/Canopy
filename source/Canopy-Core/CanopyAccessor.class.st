@@ -1,6 +1,6 @@
 Class {
 	#name : 'CanopyAccessor',
-	#superclass : 'CanopyNode',
+	#superclass : 'CanopyLeafNode',
 	#instVars : [
 		'object',
 		'selector'
@@ -11,8 +11,13 @@ Class {
 }
 
 { #category : 'accessing' }
-CanopyAccessor >> inspectionLabel [ 
-	^ self key 
+CanopyAccessor class >> type [ 
+	^ #accessor
+]
+
+{ #category : 'initialization' }
+CanopyAccessor >> initializeFromPragma: aPragma [ 
+	self halt.
 ]
 
 { #category : 'accessing' }

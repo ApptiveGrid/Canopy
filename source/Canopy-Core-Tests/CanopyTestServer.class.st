@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'port'
 	],
-	#category : 'Canopy-Core',
-	#package : 'Canopy-Core'
+	#category : 'Canopy-Core-Tests',
+	#package : 'Canopy-Core-Tests'
 }
 
 { #category : 'accessing' }
