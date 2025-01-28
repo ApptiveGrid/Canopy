@@ -17,7 +17,7 @@ CanopyAccessor class >> type [
 
 { #category : 'initialization' }
 CanopyAccessor >> initializeFromPragma: aPragma [ 
-	self halt.
+	selector := aPragma method selector
 ]
 
 { #category : 'accessing' }

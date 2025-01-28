@@ -37,6 +37,12 @@ VirtualMachine >> maxExternalSemaphoresCanopy [
 ]
 
 { #category : '*Canopy-Metrics' }
+VirtualMachine >> maximumExternalSemaphoresCanopy: anInteger [
+	<canopyValue: #maximumExternalSemaphores type: #accessor arguments: #()>
+	^ self maxExternalSemaphoresSilently: anInteger 
+]
+
+{ #category : '*Canopy-Metrics' }
 VirtualMachine >> memoryEndCanopy [
 	<canopyValue: #memoryEnd type: #metric arguments: #('The end of memory' gauge)>
 	^ self memoryEnd 
