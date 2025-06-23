@@ -37,8 +37,14 @@ CanopyBranchNode >> acceptCanopy: aVisitor [
 CanopyBranchNode >> apply: aGlobBranch [ 
 	aGlobBranch keysAndValuesDo: [ :key : value |
 		(value isKindOf: CanopyBranchNode)
-			ifTrue: [ (nodes at: key) apply: value ]
-			ifFalse: [ (nodes at: key) value: value value ]
+			ifTrue: [ 
+				nodes 
+					at: key 
+					ifPresent: [ :sn | sn apply: value ]  ]
+			ifFalse: [ 
+				nodes 
+					at: key
+					ifPresent: [ :sn |  sn value: value value ] ]
 		 ]
 ]
 
