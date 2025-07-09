@@ -1,6 +1,6 @@
 Class {
 	#name : 'CanopyVisitor',
-	#superclass : 'MetricVisitor',
+	#superclass : 'Object',
 	#category : 'Canopy-Core',
 	#package : 'Canopy-Core'
 }
