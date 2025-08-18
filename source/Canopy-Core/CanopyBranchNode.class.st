@@ -111,10 +111,10 @@ CanopyBranchNode >> initialize [
 ]
 
 { #category : 'inspector' }
-CanopyBranchNode >> inspectionEntries [
+CanopyBranchNode >> inspectionEntries: aBuilder [
 	<inspectorPresentationOrder: 0 title: 'global branch'>
 
-	^ SpTablePresenter new
+	^ aBuilder newTable
 		items: nodes values;
 		addColumn: (SpStringTableColumn new
 			title: 'key'";
