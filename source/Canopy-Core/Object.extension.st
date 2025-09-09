@@ -26,3 +26,9 @@ Object >> canopySetupFrom: anObject [
 	self canopyMapping 
 		apply: anObject asCanopy 
 ]
+
+{ #category : '*Canopy-Core' }
+Object >> canopySetupFromFile: aString [ 
+	self canopyMapping 
+		apply: aString asFileReference asCanopy 
+]
