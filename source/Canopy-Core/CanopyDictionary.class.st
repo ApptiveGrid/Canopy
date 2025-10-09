@@ -18,7 +18,7 @@ CanopyDictionary class >> on: aDictionary [
 CanopyDictionary >> apply: aCanopyBranchNode [ 
 
 	aCanopyBranchNode keysAndValuesDo: [ :key :value |
-		dictionary at: key put: value  ]
+		dictionary at: key put: value value ]
 ]
 
 { #category : 'accessing' }
