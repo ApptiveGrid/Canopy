@@ -14,6 +14,11 @@ CanopyDictionary class >> on: aDictionary [
 		dictionary: aDictionary 
 ]
 
+{ #category : 'accessing' }
+CanopyDictionary class >> type [ 
+	^ #dictionary 
+]
+
 { #category : 'target resize' }
 CanopyDictionary >> apply: aCanopyBranchNode [ 
 
