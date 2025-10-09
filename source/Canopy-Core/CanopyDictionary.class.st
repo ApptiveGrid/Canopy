@@ -14,6 +14,13 @@ CanopyDictionary class >> on: aDictionary [
 		dictionary: aDictionary 
 ]
 
+{ #category : 'target resize' }
+CanopyDictionary >> apply: aCanopyBranchNode [ 
+
+	aCanopyBranchNode keysAndValuesDo: [ :key :value |
+		dictionary at: key put: value  ]
+]
+
 { #category : 'accessing' }
 CanopyDictionary >> dictionary: aCollection [ 
 	dictionary := aCollection
