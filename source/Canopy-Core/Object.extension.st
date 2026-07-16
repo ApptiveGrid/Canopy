@@ -1,8 +1,8 @@
 Extension { #name : 'Object' }
 
 { #category : '*Canopy-Core' }
-Object >> asCanopyValue [
-	^ CanopyValue new value: self 
+Object >> asCanopyCell [
+	^ CanopyCell new value: self
 ]
 
 { #category : '*Canopy-Core' }
