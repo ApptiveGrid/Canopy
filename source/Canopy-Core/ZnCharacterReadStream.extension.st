@@ -1,6 +1,6 @@
 Extension { #name : 'ZnCharacterReadStream' }
 
 { #category : '*Canopy-Core' }
-ZnCharacterReadStream >> asCanopyValue [ 
-	^ (STON fromStream: self) asCanopyValue 
+ZnCharacterReadStream >> asCanopyCell [
+	^ (STON fromStream: self) asCanopyCell
 ]

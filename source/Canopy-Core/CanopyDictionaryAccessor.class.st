@@ -1,5 +1,5 @@
 Class {
-	#name : 'CanopyDictionary',
+	#name : 'CanopyDictionaryAccessor',
 	#superclass : 'CanopyLeafNode',
 	#instVars : [
 		'dictionary'
@@ -9,24 +9,24 @@ Class {
 }
 
 { #category : 'instance creation' }
-CanopyDictionary class >> on: aDictionary [ 
+CanopyDictionaryAccessor class >> on: aDictionary [ 
 	^ self new 
 		dictionary: aDictionary 
 ]
 
 { #category : 'accessing' }
-CanopyDictionary class >> type [ 
+CanopyDictionaryAccessor class >> type [ 
 	^ #dictionary 
 ]
 
 { #category : 'target resize' }
-CanopyDictionary >> apply: aCanopyBranchNode [ 
+CanopyDictionaryAccessor >> apply: aCanopyBranchNode [ 
 
 	aCanopyBranchNode keysAndValuesDo: [ :key :value |
 		dictionary at: key put: value value ]
 ]
 
 { #category : 'accessing' }
-CanopyDictionary >> dictionary: aCollection [ 
+CanopyDictionaryAccessor >> dictionary: aCollection [ 
 	dictionary := aCollection
 ]

@@ -44,13 +44,13 @@ CanopyMappingBuilder >> build [
 { #category : 'as yet unclassified' }
 CanopyMappingBuilder >> buildComplexProperties [
 	| pragmas |
-	pragmas := Pragma 
-		allNamed: #canopyMapping
-		from: object class 
+	pragmas := Pragma
+		allNamed: #canopyBranch
+		from: object class
 		to: Object.
-	(pragmas size = 1) ifTrue: [ 
-		object 
-			perform: pragmas first selector asMutator 
+	(pragmas size = 1) ifTrue: [
+		object
+			perform: pragmas first selector asMutator
 			with: self ]
 ]
 

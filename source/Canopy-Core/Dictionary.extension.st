@@ -1,19 +1,17 @@
 Extension { #name : 'Dictionary' }
 
 { #category : '*Canopy-Core' }
-Dictionary >> asCanopyValue [
+Dictionary >> asCanopyCell [
 	| group |
 	group := CanopyBranchNode new.
-	
 	self keysAndValuesDo: [ :key :value |
-		group at: key put: value asCanopyValue ].
-	^ group 
+		group at: key put: value asCanopyCell ].
+	^ group
 ]
 
 { #category : '*Canopy-Core' }
-Dictionary >> canopyMapping: aBuilder [
-	<canopyMapping>
-	
+Dictionary >> canopyBranch: aBuilder [
+	<canopyBranch>
 	self keysAndValuesDo: [ :key :value |
-		aBuilder at: key addMapping: value  ]
+		aBuilder at: key addMapping: value ]
 ]
