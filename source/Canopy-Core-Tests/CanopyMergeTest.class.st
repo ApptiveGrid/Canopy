@@ -24,6 +24,18 @@ CanopyMergeTest >> testCellMergeOverwritesWithLastValue [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMergeTest >> testDictionaryAccessorValueReturnsWrappedDictionary [
+	"Previously missing (see Canopy roadmap): without it, value/inspectionValue
+	silently fell back to Object>>value (returns self) instead of DNU-ing,
+	which is misleading in the debugger/inspector - not a crash, but wrong."
+	| dict target |
+	dict := Dictionary new.
+	target := CanopyDictionaryAccessor on: dict.
+	self assert: target value == dict.
+	self assert: target inspectionValue == dict
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMergeTest >> testDictionaryApplyPushesValuesByKey [
 	| branch dict target |
 	branch := CanopyBranchNode new.
