@@ -14,6 +14,30 @@ CanopyBindingTest >> testBindAfterValueIsSet [
 	self assert: object one equals: 42
 ]
 
+{ #category : 'as yet unclassified' }
+CanopyBindingTest >> testCanopySetupFromBindsAndAppliesConfig [
+	"Covers the declarative entry point Object>>canopySetupFrom: - builds the
+	receiver's own component tree via pragma reflection and applies the given
+	config object onto it in one call. Previously untested, see Canopy roadmap."
+	| object |
+	object := CanopyRootTestObject new.
+	object canopySetupFrom: '{ "one" : 42 }'.
+	self assert: object one equals: 42
+]
+
+{ #category : 'as yet unclassified' }
+CanopyBindingTest >> testCanopySetupFromFileBindsAndAppliesConfig [
+	"Covers the declarative entry point Object>>canopySetupFromFile: - same as
+	canopySetupFrom:, but reading the config from an actual file on disk."
+	| object file |
+	file := FileLocator temp / 'canopy-setup-test.json'.
+	file writeStreamDo: [ :stream | stream nextPutAll: '{ "one" : 42 }' ].
+	object := CanopyRootTestObject new.
+	[ object canopySetupFromFile: file fullName ]
+		ensure: [ file ensureDelete ].
+	self assert: object one equals: 42
+]
+
 { #category : 'tests' }
 CanopyBindingTest >> testBindProperties [
 	| tree object |
