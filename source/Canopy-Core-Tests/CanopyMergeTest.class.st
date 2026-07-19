@@ -49,6 +49,20 @@ CanopyMergeTest >> testDictionaryApplyPushesValuesByKey [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMergeTest >> testDictionaryApplyWithTagOnlyAppliesWhenBranchTagMatches [
+	| branch dict target |
+	branch := CanopyBranchNode new.
+	branch at: #a put: (CanopyCell new value: 1).
+	branch addTag: #config.
+	dict := Dictionary new.
+	target := CanopyDictionaryAccessor on: dict.
+	target apply: branch withTag: #metrics.
+	self deny: (dict includesKey: #a).
+	target apply: branch withTag: #config.
+	self assert: (dict at: #a) equals: 1
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMergeTest >> testMergingBranchIntoCellIsNotDetectedAsConflict [
 	"Known rough edge, see Canopy doc.md 'Fehlerklassen & bekannte Rough Edges': the reverse
 	case does NOT raise an error. CanopyCell>>merge: calls aGlobNode value, which falls back

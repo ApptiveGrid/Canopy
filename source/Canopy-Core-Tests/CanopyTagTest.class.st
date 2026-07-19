@@ -21,6 +21,25 @@ CanopyTagTest >> testApplyIgnoresTagsEntirely [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyTagTest >> testApplyWithTagOnlyAppliesMatchingTaggedValues [
+	"apply:withTag: filters at the leaf level - only values tagged with the given tag
+	are pushed into the component tree. Differently-tagged values interleaved in the
+	same branch are left untouched, unlike plain apply: (see testApplyIgnoresTagsEntirely)."
+	| component tree object |
+	tree := Canopy new.
+	tree importTree: '{ "one" : 1 }' tags: #( config ).
+	tree importTree: '{ "two" : 2 }' tags: #( metrics ).
+	component := CanopyBranchNode new.
+	object := CanopyTestObject new.
+	object one: 0; two: 0.
+	component at: #one put: (CanopyAccessor new object: object; selector: #one; yourself).
+	component at: #two put: (CanopyAccessor new object: object; selector: #two; yourself).
+	component apply: tree withTag: #config.
+	self assert: object one equals: 1.
+	self assert: object two equals: 0
+]
+
+{ #category : 'as yet unclassified' }
 CanopyTagTest >> testImportTreeTagsAppliesTagsToAllNodes [
 	| tree |
 	tree := Canopy new importTree: '{ "a" : { "b" : 1 } }' tags: #( mine ).

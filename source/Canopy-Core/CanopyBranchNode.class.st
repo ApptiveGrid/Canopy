@@ -48,10 +48,25 @@ CanopyBranchNode >> apply: aGlobBranch [
 		 ]
 ]
 
+{ #category : 'target resize' }
+CanopyBranchNode >> apply: aGlobBranch withTag: aTag [
+	aGlobBranch keysAndValuesDo: [ :key :value |
+		(value isKindOf: CanopyBranchNode)
+			ifTrue: [
+				nodes
+					at: key
+					ifPresent: [ :sn | sn apply: value withTag: aTag ] ]
+			ifFalse: [
+				(value tags includes: aTag) ifTrue: [
+					nodes
+						at: key
+						ifPresent: [ :sn | sn value: value value ] ] ] ]
+]
+
 { #category : 'accessing' }
-CanopyBranchNode >> at: key [ 
-	^ nodes 
-		at: key 
+CanopyBranchNode >> at: key [
+	^ nodes
+		at: key
 		ifAbsent: [ NotFound signal: 'cannot find key ', key asString , ' in ', self printString ]
 ]
 

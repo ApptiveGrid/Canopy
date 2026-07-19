@@ -26,6 +26,12 @@ CanopyDictionaryAccessor >> apply: aCanopyBranchNode [
 		dictionary at: key put: value value ]
 ]
 
+{ #category : 'target resize' }
+CanopyDictionaryAccessor >> apply: aCanopyBranchNode withTag: aTag [
+	(aCanopyBranchNode tags includes: aTag) ifTrue: [
+		self apply: aCanopyBranchNode ]
+]
+
 { #category : 'accessing' }
 CanopyDictionaryAccessor >> dictionary: aCollection [
 	dictionary := aCollection
