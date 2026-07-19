@@ -27,6 +27,11 @@ CanopyDictionaryAccessor >> apply: aCanopyBranchNode [
 ]
 
 { #category : 'accessing' }
-CanopyDictionaryAccessor >> dictionary: aCollection [ 
+CanopyDictionaryAccessor >> dictionary: aCollection [
 	dictionary := aCollection
+]
+
+{ #category : 'evaluating' }
+CanopyDictionaryAccessor >> value [
+	^ dictionary
 ]
