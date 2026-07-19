@@ -9,11 +9,6 @@ Class {
 	#package : 'Canopy-Core'
 }
 
-{ #category : 'instance creation' }
-CanopyMappingBuilder class >> build: anObject [ 
-	^ self new build: anObject
-]
-
 { #category : 'adding' }
 CanopyMappingBuilder >> addMapping: anObject [
 	self class new 
