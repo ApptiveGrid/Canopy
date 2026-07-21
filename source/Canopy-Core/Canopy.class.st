@@ -20,13 +20,10 @@ Canopy class >> /+ aString [
 
 { #category : 'domains' }
 Canopy class >> attachSystemMetrics [
-	"Explicit opt-in: attaches the #image/#virtualMachine domains from systemMetrics onto
-	the live singleton. Not wired to any automatic image-startup hook - a caller decides
-	when (or whether) to invoke this."
-	| metrics |
-	metrics := self systemMetrics.
-	self registerDomain: #image with: (metrics / #image).
-	self registerDomain: #virtualMachine with: (metrics / #virtualMachine)
+	"Convenience wrapper - registers both system-metrics domains. Not wired to any
+	automatic image-startup hook - a caller decides when (or whether) to invoke this."
+	self registerImageMetrics.
+	self registerVirtualMachineMetrics
 ]
 
 { #category : 'domains' }
@@ -43,6 +40,18 @@ Canopy class >> instance [
 { #category : 'domains' }
 Canopy class >> registerDomain: aSymbol with: aNode [
 	^ self instance registerDomain: aSymbol with: aNode
+]
+
+{ #category : 'domains' }
+Canopy class >> registerImageMetrics [
+	"Explicit opt-in, independently selectable from registerVirtualMachineMetrics."
+	^ self registerDomain: #image with: (self systemMetrics / #image)
+]
+
+{ #category : 'domains' }
+Canopy class >> registerVirtualMachineMetrics [
+	"Explicit opt-in, independently selectable from registerImageMetrics."
+	^ self registerDomain: #virtualMachine with: (self systemMetrics / #virtualMachine)
 ]
 
 { #category : 'initialization' }
