@@ -35,7 +35,7 @@ CanopyDomainTest >> testAtOperatorCombinesPathAndValue [
 CanopyDomainTest >> testAtPutOnExistingDomainKeyOverwritesWithoutWarning [
 	"at:put: itself intentionally stays ungated — it is also used internally for tree/merge
 	mechanics that rely on overwrite semantics. Callers that want collision protection for
-	top-level domains should use registerDomain:with: instead (see testRegisterDomainRaisesOnCollisionAndDoesNotOverwrite).
+	top-level domains should use registerDomainNamed:with: instead (see testRegisterDomainNamedRaisesOnCollisionAndDoesNotOverwrite).
 	This test documents that at:put: itself still silently overwrites."
 	| root replacement |
 	root := Canopy new.
@@ -46,12 +46,25 @@ CanopyDomainTest >> testAtPutOnExistingDomainKeyOverwritesWithoutWarning [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyDomainTest >> testDomainsListsAllRegisteredDomains [
+CanopyDomainTest >> testDomainNamesListsAllRegisteredDomainNames [
 	| root |
 	root := Canopy new.
-	root registerDomain: #image with: (CanopyCell new value: 1).
-	root registerDomain: #virtualMachine with: (CanopyCell new value: 2).
-	self assertCollection: root domains asArray hasSameElements: #( #image #virtualMachine )
+	root registerDomainNamed: #image with: (CanopyCell new value: 1).
+	root registerDomainNamed: #virtualMachine with: (CanopyCell new value: 2).
+	self assertCollection: root domainNames asArray hasSameElements: #( #image #virtualMachine )
+]
+
+{ #category : 'as yet unclassified' }
+CanopyDomainTest >> testDomainsReturnsRegisteredNodes [
+	"domains returns the registered domain nodes themselves (Norbert, 2026-07-21: a domain is
+	what got registered under a name, not the name itself - domainNames is for the names)."
+	| root imageNode vmNode |
+	root := Canopy new.
+	imageNode := CanopyCell new value: 1.
+	vmNode := CanopyCell new value: 2.
+	root registerDomainNamed: #image with: imageNode.
+	root registerDomainNamed: #virtualMachine with: vmNode.
+	self assertCollection: root domains asArray hasSameElements: (Array with: imageNode with: vmNode)
 ]
 
 { #category : 'as yet unclassified' }
@@ -74,27 +87,27 @@ CanopyDomainTest >> testMultipleDomainsCoexistIndependently [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyDomainTest >> testRegisterDomainAddsNewDomain [
+CanopyDomainTest >> testRegisterDomainNamedAddsNewDomain [
 	| root |
 	root := Canopy new.
-	root registerDomain: #image with: (CanopyCell new value: 1).
+	root registerDomainNamed: #image with: (CanopyCell new value: 1).
 	self assert: (root / #image) value equals: 1.
-	self assert: root domains asArray equals: #( #image )
+	self assert: root domainNames asArray equals: #( #image )
 ]
 
 { #category : 'as yet unclassified' }
-CanopyDomainTest >> testRegisterDomainRaisesOnCollisionAndDoesNotOverwrite [
+CanopyDomainTest >> testRegisterDomainNamedRaisesOnCollisionAndDoesNotOverwrite [
 	| root |
 	root := Canopy new.
-	root registerDomain: #image with: (CanopyCell new value: 1).
-	self should: [ root registerDomain: #image with: (CanopyCell new value: 2) ] raise: Error.
+	root registerDomainNamed: #image with: (CanopyCell new value: 1).
+	self should: [ root registerDomainNamed: #image with: (CanopyCell new value: 2) ] raise: Error.
 	self assert: (root / #image) value equals: 1
 ]
 
 { #category : 'as yet unclassified' }
 CanopyDomainTest >> testRegisterImageMetricsRegistersOnlyImageDomain [
 	[ Canopy registerImageMetrics.
-	self assert: Canopy domains asArray equals: #( #image ) ]
+	self assert: Canopy domainNames asArray equals: #( #image ) ]
 		ensure: [ Canopy reset ]
 ]
 
@@ -103,14 +116,14 @@ CanopyDomainTest >> testRegisterSystemMetricsRegistersImageAndVirtualMachineDoma
 	"registerSystemMetrics is an explicit opt-in, not an automatic image-startup hook (Norbert,
 	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves."
 	[ Canopy registerSystemMetrics.
-	self assertCollection: Canopy domains asArray hasSameElements: #( #image #virtualMachine ) ]
+	self assertCollection: Canopy domainNames asArray hasSameElements: #( #image #virtualMachine ) ]
 		ensure: [ Canopy reset ]
 ]
 
 { #category : 'as yet unclassified' }
 CanopyDomainTest >> testRegisterVirtualMachineMetricsRegistersOnlyVirtualMachineDomain [
 	[ Canopy registerVirtualMachineMetrics.
-	self assert: Canopy domains asArray equals: #( #virtualMachine ) ]
+	self assert: Canopy domainNames asArray equals: #( #virtualMachine ) ]
 		ensure: [ Canopy reset ]
 ]
 
