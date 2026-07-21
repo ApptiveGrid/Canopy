@@ -90,3 +90,18 @@ CanopyBindingTest >> testMultipleAccessorRegistrationsAreAllNotified [
 	self assert: objectA one equals: 99.
 	self assert: objectB one equals: 99
 ]
+
+{ #category : 'as yet unclassified' }
+CanopyBindingTest >> testSetupConfigurationBindsPortFromTestServerDomain [
+	"Regression test for the fixed Canopy apptiveGrid placeholder bug (see Canopy roadmap,
+	Bekannter Bug/Platzhalter: Canopy apptiveGrid nicht definiert). apptiveGrid was never a
+	real domain - it silently resolved to the unrelated Object>>apptiveGrid accessor from
+	Apptive-Common-Core and returned nil instead of raising. Fixed by using the actual
+	#testServer domain this class represents."
+	| server |
+	[ ((Canopy /+ #testServer) /+ #httpServer) at: #port put: (CanopyCell new value: 8080).
+	server := CanopyTestServer new.
+	server setupConfiguration.
+	self assert: server port equals: 8080 ]
+		ensure: [ Canopy reset ]
+]
