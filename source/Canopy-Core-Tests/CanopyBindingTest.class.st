@@ -14,6 +14,17 @@ CanopyBindingTest >> testBindAfterValueIsSet [
 	self assert: object one equals: 42
 ]
 
+{ #category : 'tests' }
+CanopyBindingTest >> testBindProperties [
+	| tree object |
+	tree := Canopy new importTree: '{ "first" : { "second" : { "one" : 1, "two": 2, "three" : 3 }}}'.
+	object := CanopyTestObject new
+		canopyBind: tree / #first / #second keys: #( one two three ).
+	self assert: object one equals: 1.
+	self assert: object two equals: 2.
+	self assert: object three equals: 3
+]
+
 { #category : 'as yet unclassified' }
 CanopyBindingTest >> testCanopySetupFromBindsAndAppliesConfig [
 	"Covers the declarative entry point Object>>canopySetupFrom: - builds the
@@ -36,17 +47,6 @@ CanopyBindingTest >> testCanopySetupFromFileBindsAndAppliesConfig [
 	[ object canopySetupFromFile: file fullName ]
 		ensure: [ file ensureDelete ].
 	self assert: object one equals: 42
-]
-
-{ #category : 'tests' }
-CanopyBindingTest >> testBindProperties [
-	| tree object |
-	tree := Canopy new importTree: '{ "first" : { "second" : { "one" : 1, "two": 2, "three" : 3 }}}'.
-	object := CanopyTestObject new
-		canopyBind: tree / #first / #second keys: #( one two three ).
-	self assert: object one equals: 1.
-	self assert: object two equals: 2.
-	self assert: object three equals: 3
 ]
 
 { #category : 'as yet unclassified' }
