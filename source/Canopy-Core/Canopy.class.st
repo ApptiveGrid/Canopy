@@ -19,6 +19,11 @@ Canopy class >> /+ aString [
 ]
 
 { #category : 'domains' }
+Canopy class >> domainNames [
+	^ self instance domainNames
+]
+
+{ #category : 'domains' }
 Canopy class >> domains [
 	^ self instance domains
 ]
@@ -30,14 +35,14 @@ Canopy class >> instance [
 ]
 
 { #category : 'domains' }
-Canopy class >> registerDomain: aSymbol with: aNode [
-	^ self instance registerDomain: aSymbol with: aNode
+Canopy class >> registerDomainNamed: aSymbol with: aNode [
+	^ self instance registerDomainNamed: aSymbol with: aNode
 ]
 
 { #category : 'domains' }
 Canopy class >> registerImageMetrics [
 	"Explicit opt-in, independently selectable from registerVirtualMachineMetrics."
-	^ self registerDomain: #image with: (self systemMetrics / #image)
+	^ self registerDomainNamed: #image with: (self systemMetrics / #image)
 ]
 
 { #category : 'domains' }
@@ -51,7 +56,7 @@ Canopy class >> registerSystemMetrics [
 { #category : 'domains' }
 Canopy class >> registerVirtualMachineMetrics [
 	"Explicit opt-in, independently selectable from registerImageMetrics."
-	^ self registerDomain: #virtualMachine with: (self systemMetrics / #virtualMachine)
+	^ self registerDomainNamed: #virtualMachine with: (self systemMetrics / #virtualMachine)
 ]
 
 { #category : 'initialization' }
@@ -72,12 +77,17 @@ Canopy class >> systemMetrics [
 ]
 
 { #category : 'domains' }
-Canopy >> domains [
+Canopy >> domainNames [
 	^ self keys
 ]
 
 { #category : 'domains' }
-Canopy >> registerDomain: aSymbol with: aNode [
+Canopy >> domains [
+	^ self nodes values
+]
+
+{ #category : 'domains' }
+Canopy >> registerDomainNamed: aSymbol with: aNode [
 	(nodes includesKey: aSymbol) ifTrue: [ 
 		^ self error: 'domain ' , aSymbol asString , ' is already registered' ].
 	^ self at: aSymbol put: aNode
