@@ -63,26 +63,27 @@ CanopyMergeTest >> testDictionaryApplyWithTagOnlyAppliesWhenBranchTagMatches [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyMergeTest >> testMergingBranchIntoCellIsNotDetectedAsConflict [
-	"Known rough edge, see Canopy doc.md 'Fehlerklassen & bekannte Rough Edges': the reverse
-	case does NOT raise an error. CanopyCell>>merge: calls aGlobNode value, which falls back
-	to Object>>value (returns self) for a CanopyBranchNode - the existing cell silently ends
-	up holding the incoming branch node itself instead of a raw value. Characterization test:
-	documents CURRENT (arguably broken) behavior, not desired behavior."
+CanopyMergeTest >> testMergingBranchIntoCellRaisesConflict [
+	"Fixed 2026-07-21 (Canopy backlog, Merge-Konflikt-Asymmetrie beheben): CanopyCell>>merge:
+	now raises a controlled conflict error when the incoming node is not itself a CanopyCell,
+	instead of silently falling back to Object>>value (which returned the incoming branch
+	node itself, corrupting the existing cell). Mirrors the existing Cell->Branch conflict
+	from testMergingCellIntoBranchRaisesConflict in the other direction. Was previously
+	testMergingBranchIntoCellIsNotDetectedAsConflict, a characterization test for this gap."
 	| existing incoming |
 	existing := Canopy new.
 	existing at: #foo put: (CanopyCell new value: 42).
 	incoming := Canopy new.
 	incoming at: #foo put: CanopyBranchNode new.
-	existing merge: incoming.
-	self assert: (existing / #foo) value == (incoming / #foo)
+	self should: [ existing merge: incoming ] raise: Error
 ]
 
 { #category : 'as yet unclassified' }
 CanopyMergeTest >> testMergingCellIntoBranchRaisesConflict [
-	"Verified 2026-07-16: CanopyCell>>mergeInto: raises a controlled conflict error
-	('cponflict', typo in the source) when an incoming CanopyCell is merged into an
-	existing CanopyBranchNode at the same key. See Canopy doc.md, Fehlerklassen."
+	"Verified 2026-07-16: CanopyCell>>mergeInto: raises a controlled conflict error when an
+	incoming CanopyCell is merged into an existing CanopyBranchNode at the same key. Error
+	message typo ('cponflict') fixed 2026-07-21, see Canopy backlog, Merge-Konflikt-
+	Asymmetrie beheben. See Canopy doc.md, Fehlerklassen."
 	| existing incoming |
 	existing := Canopy new.
 	existing at: #foo put: CanopyBranchNode new.

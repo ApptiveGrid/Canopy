@@ -22,13 +22,14 @@ CanopyCell >> initialize [
 
 { #category : 'actions' }
 CanopyCell >> merge: aGlobNode [
+	(aGlobNode isKindOf: CanopyCell) ifFalse: [ ^ self error: 'conflict' ].
 	self value: aGlobNode value.
 	tags addAll: aGlobNode tags
 ]
 
 { #category : 'as yet unclassified' }
 CanopyCell >> mergeInto: aGlobValueHolder [ 
-	self error: 'cponflict'
+	self error: 'conflict'
 ]
 
 { #category : 'printing' }
