@@ -6,8 +6,8 @@ Class {
 }
 
 { #category : 'accessing' }
-CanopyLeafNode class >> withType: aString [ 
-	self subclassesDo: [ :cls |
+CanopyLeafNode class >> withType: aString [
+	self allSubclassesDo: [ :cls |
 		(cls type = aString) ifTrue: [ 
 			^ cls ] ].
 	self error: 'could not find leaf node type ', aString asString
