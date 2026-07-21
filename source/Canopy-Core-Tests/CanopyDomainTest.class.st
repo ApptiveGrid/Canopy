@@ -46,6 +46,15 @@ CanopyDomainTest >> testAtPutOnExistingDomainKeyOverwritesWithoutWarning [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyDomainTest >> testAttachSystemMetricsRegistersImageAndVirtualMachineDomains [
+	"attachSystemMetrics is an explicit opt-in, not an automatic image-startup hook (Norbert,
+	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves."
+	[ Canopy attachSystemMetrics.
+	self assertCollection: Canopy domains asArray hasSameElements: #( #image #virtualMachine ) ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
 CanopyDomainTest >> testDomainsListsAllRegisteredDomains [
 	| root |
 	root := Canopy new.
