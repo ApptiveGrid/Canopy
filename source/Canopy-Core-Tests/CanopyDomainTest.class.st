@@ -46,15 +46,6 @@ CanopyDomainTest >> testAtPutOnExistingDomainKeyOverwritesWithoutWarning [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyDomainTest >> testAttachSystemMetricsRegistersImageAndVirtualMachineDomains [
-	"attachSystemMetrics is an explicit opt-in, not an automatic image-startup hook (Norbert,
-	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves."
-	[ Canopy attachSystemMetrics.
-	self assertCollection: Canopy domains asArray hasSameElements: #( #image #virtualMachine ) ]
-		ensure: [ Canopy reset ]
-]
-
-{ #category : 'as yet unclassified' }
 CanopyDomainTest >> testDomainsListsAllRegisteredDomains [
 	| root |
 	root := Canopy new.
@@ -98,6 +89,29 @@ CanopyDomainTest >> testRegisterDomainRaisesOnCollisionAndDoesNotOverwrite [
 	root registerDomain: #image with: (CanopyCell new value: 1).
 	self should: [ root registerDomain: #image with: (CanopyCell new value: 2) ] raise: Error.
 	self assert: (root / #image) value equals: 1
+]
+
+{ #category : 'as yet unclassified' }
+CanopyDomainTest >> testRegisterImageMetricsRegistersOnlyImageDomain [
+	[ Canopy registerImageMetrics.
+	self assert: Canopy domains asArray equals: #( #image ) ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
+CanopyDomainTest >> testRegisterSystemMetricsRegistersImageAndVirtualMachineDomains [
+	"registerSystemMetrics is an explicit opt-in, not an automatic image-startup hook (Norbert,
+	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves."
+	[ Canopy registerSystemMetrics.
+	self assertCollection: Canopy domains asArray hasSameElements: #( #image #virtualMachine ) ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
+CanopyDomainTest >> testRegisterVirtualMachineMetricsRegistersOnlyVirtualMachineDomain [
+	[ Canopy registerVirtualMachineMetrics.
+	self assert: Canopy domains asArray equals: #( #virtualMachine ) ]
+		ensure: [ Canopy reset ]
 ]
 
 { #category : 'as yet unclassified' }
