@@ -2,8 +2,7 @@ Class {
 	#name : 'CanopyPrometheusVisitor',
 	#superclass : 'CanopyVisitor',
 	#instVars : [
-		'stream',
-		'prefixes'
+		'stream'
 	],
 	#category : 'Canopy-Metrics',
 	#package : 'Canopy-Metrics'
@@ -16,8 +15,7 @@ CanopyPrometheusVisitor >> asMilliseconds: timestamp [
 
 { #category : 'as yet unclassified' }
 CanopyPrometheusVisitor >> convertMetricName: aMetric [
-	^ aMetric "fullKey" key
-
+	^ aMetric fullKey
 ]
 
 { #category : 'visiting' }
@@ -31,7 +29,6 @@ CanopyPrometheusVisitor >> format: anObject [
 CanopyPrometheusVisitor >> initialize [
 	super initialize.
 	stream := WriteStream on: ''.
-	prefixes := OrderedCollection new
 ]
 
 { #category : 'visiting' }
@@ -48,11 +45,7 @@ CanopyPrometheusVisitor >> visitMetric: aMetricGroup [
 
 { #category : 'visiting' }
 CanopyPrometheusVisitor >> visitMetricGroup: aMetricGroup [ 
-	| metrics |
-	prefixes add: aMetricGroup name.
-	metrics := self visitAll: aMetricGroup metrics.
-	prefixes removeLast.
-	^ metrics
+	^ self visitAll: aMetricGroup metrics
 ]
 
 { #category : 'visiting' }
