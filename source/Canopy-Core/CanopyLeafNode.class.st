@@ -28,6 +28,14 @@ CanopyLeafNode >> inspectionValue [
 	^ self value 
 ]
 
+{ #category : 'actions' }
+CanopyLeafNode >> mergeInto: aGlobValueHolder [
+	"Default conflict for leaf types with no defined merge semantics (Accessor,
+	DictionaryAccessor, Metric - they bind to a live object, merging them makes no sense).
+	CanopyCell overrides this itself since it DOES have real merge semantics."
+	self error: 'conflict'
+]
+
 { #category : 'enumerating' }
 CanopyLeafNode >> recursiveDo: aBlock [ 
 	aBlock value: self 

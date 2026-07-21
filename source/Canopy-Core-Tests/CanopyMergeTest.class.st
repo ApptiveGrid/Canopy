@@ -63,6 +63,38 @@ CanopyMergeTest >> testDictionaryApplyWithTagOnlyAppliesWhenBranchTagMatches [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMergeTest >> testMergingAccessorIntoAccessorRaisesConflict [
+	"Verified 2026-07-21: two accessors bound to different live objects have no defined merge
+	semantics - raises a controlled conflict instead of a raw MessageNotUnderstood."
+	| existing incoming |
+	existing := CanopyAccessor new.
+	incoming := CanopyAccessor new.
+	self should: [ existing merge: incoming ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMergeTest >> testMergingAccessorIntoBranchRaisesConflict [
+	"Verified 2026-07-21: before the fix this crashed with a raw MessageNotUnderstood
+	(#mergeInto:) instead of a controlled conflict - CanopyAccessor has no defined merge
+	semantics, merging one into anything never makes sense."
+	| existing incoming |
+	existing := CanopyBranchNode new at: #a put: (CanopyCell new value: 1); yourself.
+	incoming := CanopyAccessor new.
+	self should: [ existing merge: incoming ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMergeTest >> testMergingBranchIntoAccessorRaisesConflict [
+	"Verified 2026-07-21 (Canopy backlog, weitere asymmetrische Typkombinationen): before the
+	fix this crashed with a raw MessageNotUnderstood (#at:add:) instead of a controlled
+	conflict - CanopyAccessor has no defined merge semantics, merging into it never makes sense."
+	| existing incoming |
+	existing := CanopyAccessor new.
+	incoming := CanopyBranchNode new at: #a put: (CanopyCell new value: 1); yourself.
+	self should: [ existing merge: incoming ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMergeTest >> testMergingBranchIntoCellRaisesConflict [
 	"Fixed 2026-07-21 (Canopy backlog, Merge-Konflikt-Asymmetrie beheben): CanopyCell>>merge:
 	now raises a controlled conflict error when the incoming node is not itself a CanopyCell,
@@ -75,6 +107,17 @@ CanopyMergeTest >> testMergingBranchIntoCellRaisesConflict [
 	existing at: #foo put: (CanopyCell new value: 42).
 	incoming := Canopy new.
 	incoming at: #foo put: CanopyBranchNode new.
+	self should: [ existing merge: incoming ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMergeTest >> testMergingBranchIntoDictionaryAccessorRaisesConflict [
+	"Same fix, different leaf subtype - confirms the CanopyLeafNode>>mergeInto:/
+	CanopyBranchNode>>mergeInto: guard covers CanopyDictionaryAccessor too, not just
+	CanopyAccessor."
+	| existing incoming |
+	existing := CanopyDictionaryAccessor new.
+	incoming := CanopyBranchNode new at: #a put: (CanopyCell new value: 1); yourself.
 	self should: [ existing merge: incoming ] raise: Error
 ]
 
