@@ -167,7 +167,8 @@ CanopyBranchNode >> keysAndValuesDo: aBlock [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyBranchNode >> mergeInto: aGlobBranch [ 
+CanopyBranchNode >> mergeInto: aGlobBranch [
+	(aGlobBranch isKindOf: CanopyBranchNode) ifFalse: [ ^ self error: 'conflict' ].
 	aGlobBranch addTags: tags.
 	nodes keysAndValuesDo: [ :key :value |
 		aGlobBranch at: key add: self / key  ]
