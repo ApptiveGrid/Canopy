@@ -21,6 +21,18 @@ CanopyNode >> addTags: aCollection [
 		self addTag: each  ]
 ]
 
+{ #category : 'accessing' }
+CanopyNode >> allKeys [
+	^ parent
+		ifNotNil: [ parent allKeys , { self key } ]
+		ifNil: [ #() ]
+]
+
+{ #category : 'accessing' }
+CanopyNode >> fullKey [
+	^ '_' join: (self allKeys collect: [ :k | k asString ])
+]
+
 { #category : 'initialization' }
 CanopyNode >> initialize [
 	super initialize.

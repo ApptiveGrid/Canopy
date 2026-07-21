@@ -6,10 +6,30 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testConvertMetricNameUsesFullTreePathAcrossPlainBranches [
+	"The group_name Prometheus convention (Canopy roadmap, Metriken aus pharo-metrics
+	uebernehmen) must work even when an ancestor is a plain CanopyBranchNode, not a
+	CanopyMetricGroup - #virtualMachine/#image (Canopy class>>systemMetrics) are plain
+	branches, not metric groups. fullKey walks the real parent chain, independent of the
+	visitor - no longer relies on the now-removed CanopyPrometheusVisitor>>prefixes."
+	| mapBranch metric root vmBranch output |
+	mapBranch := CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build.
+	metric := mapBranch / #memorySize.
+	root := CanopyBranchNode new.
+	vmBranch := CanopyBranchNode new.
+	root at: #virtualMachine put: vmBranch.
+	vmBranch at: #memorySize put: metric.
+	output := CanopyPrometheusVisitor new format: root.
+	self assert: (output includesSubstring: '# HELP virtualMachine_memorySize Memory size').
+	self assert: (output includesSubstring: 'virtualMachine_memorySize')
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMetricsVisitorTest >> testFormatMetricMapNestedInMetricGroupProducesPerLabelPrometheusLines [
 	"Regression test for the previously dead CanopyPrometheusVisitor>>visitMetricGroup:/
 	visitMetricMap: - CanopyMetricGroup/CanopyMetricMap did not exist before (see Canopy
-	roadmap, Metriken aus pharo-metrics uebernehmen)."
+	roadmap, Metriken aus pharo-metrics uebernehmen). Metric name is now the full underscore-
+	joined tree path (fullKey), not the bare key - see testConvertMetricNameUsesFullTreePath."
 	| mapBranch metricMap root group output |
 	mapBranch := CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build.
 	metricMap := mapBranch / #responsesByStatus.
@@ -18,10 +38,10 @@ CanopyMetricsVisitorTest >> testFormatMetricMapNestedInMetricGroupProducesPerLab
 	root at: #zinc put: group.
 	group at: #responsesByStatus put: metricMap.
 	output := CanopyPrometheusVisitor new format: root.
-	self assert: (output includesSubstring: '# HELP responsesByStatus Responses by status').
-	self assert: (output includesSubstring: '# TYPE responsesByStatus gauge').
-	self assert: (output includesSubstring: 'responsesByStatus{status="200"} 5 ').
-	self assert: (output includesSubstring: 'responsesByStatus{status="404"} 2 ')
+	self assert: (output includesSubstring: '# HELP zinc_responsesByStatus Responses by status').
+	self assert: (output includesSubstring: '# TYPE zinc_responsesByStatus gauge').
+	self assert: (output includesSubstring: 'zinc_responsesByStatus{status="200"} 5 ').
+	self assert: (output includesSubstring: 'zinc_responsesByStatus{status="404"} 2 ')
 ]
 
 { #category : 'as yet unclassified' }

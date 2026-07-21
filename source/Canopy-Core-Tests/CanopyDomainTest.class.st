@@ -76,6 +76,21 @@ CanopyDomainTest >> testEnsureAtCreatesMissingBranch [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyDomainTest >> testFullKeyJoinsAncestorKeysWithUnderscore [
+	| root leaf |
+	root := Canopy new.
+	leaf := CanopyCell new value: 42.
+	(root /+ #virtualMachine) at: #memorySize put: leaf.
+	self assert: leaf fullKey equals: 'virtualMachine_memorySize'.
+	self assert: (root / #virtualMachine) fullKey equals: 'virtualMachine'
+]
+
+{ #category : 'as yet unclassified' }
+CanopyDomainTest >> testFullKeyOnRootIsEmpty [
+	self assert: Canopy new fullKey equals: ''
+]
+
+{ #category : 'as yet unclassified' }
 CanopyDomainTest >> testMultipleDomainsCoexistIndependently [
 	| root |
 	root := Canopy new.
