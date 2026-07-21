@@ -99,6 +99,15 @@ CanopyDomainTest >> testRegisterImageMetricsRegistersOnlyImageDomain [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyDomainTest >> testRegisterSystemMetricsRegistersImageAndVirtualMachineDomains [
+	"registerSystemMetrics is an explicit opt-in, not an automatic image-startup hook (Norbert,
+	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves."
+	[ Canopy registerSystemMetrics.
+	self assertCollection: Canopy domains asArray hasSameElements: #( #image #virtualMachine ) ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
 CanopyDomainTest >> testRegisterVirtualMachineMetricsRegistersOnlyVirtualMachineDomain [
 	[ Canopy registerVirtualMachineMetrics.
 	self assert: Canopy domains asArray equals: #( #virtualMachine ) ]

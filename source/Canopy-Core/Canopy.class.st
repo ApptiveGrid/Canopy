@@ -19,14 +19,6 @@ Canopy class >> /+ aString [
 ]
 
 { #category : 'domains' }
-Canopy class >> attachSystemMetrics [
-	"Convenience wrapper - registers both system-metrics domains. Not wired to any
-	automatic image-startup hook - a caller decides when (or whether) to invoke this."
-	self registerImageMetrics.
-	self registerVirtualMachineMetrics
-]
-
-{ #category : 'domains' }
 Canopy class >> domains [
 	^ self instance domains
 ]
@@ -46,6 +38,14 @@ Canopy class >> registerDomain: aSymbol with: aNode [
 Canopy class >> registerImageMetrics [
 	"Explicit opt-in, independently selectable from registerVirtualMachineMetrics."
 	^ self registerDomain: #image with: (self systemMetrics / #image)
+]
+
+{ #category : 'domains' }
+Canopy class >> registerSystemMetrics [
+	"Convenience wrapper - registers both system-metrics domains. Not wired to any
+	automatic image-startup hook - a caller decides when (or whether) to invoke this."
+	self registerImageMetrics.
+	self registerVirtualMachineMetrics
 ]
 
 { #category : 'domains' }
