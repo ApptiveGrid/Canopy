@@ -59,6 +59,15 @@ Canopy class >> registerVirtualMachineMetrics [
 	^ self registerDomainNamed: #virtualMachine with: (self systemMetrics / #virtualMachine)
 ]
 
+{ #category : 'domains' }
+Canopy class >> registerZincMetrics [
+	"Explicit opt-in - subscribes CanopyZincCounter to live Zinc server traffic and registers
+	the #zinc domain. Not wired to any automatic image-startup hook, same reasoning as
+	registerSystemMetrics: not everyone wants this without being asked."
+	CanopyZincCounter install.
+	^ self registerDomainNamed: #zinc with: (self zincMetrics / #zinc)
+]
+
 { #category : 'initialization' }
 Canopy class >> reset [ 
 	instance := nil 
@@ -74,6 +83,13 @@ Canopy class >> systemMetrics [
 		at: #virtualMachine addMapping: Smalltalk vm;
 		map 
 	
+]
+
+{ #category : 'metrics' }
+Canopy class >> zincMetrics [
+	^ CanopyMappingBuilder new
+		at: #zinc addMapping: CanopyZincCounter instance;
+		map
 ]
 
 { #category : 'domains' }
