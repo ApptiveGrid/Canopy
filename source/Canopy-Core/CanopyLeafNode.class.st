@@ -6,9 +6,14 @@ Class {
 }
 
 { #category : 'accessing' }
+CanopyLeafNode class >> handlesType: aString [
+	^ self type = aString
+]
+
+{ #category : 'accessing' }
 CanopyLeafNode class >> withType: aString [
 	self allSubclassesDo: [ :cls |
-		(cls type = aString) ifTrue: [ 
+		(cls handlesType: aString) ifTrue: [ 
 			^ cls ] ].
 	self error: 'could not find leaf node type ', aString asString
 ]

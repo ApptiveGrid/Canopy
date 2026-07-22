@@ -15,7 +15,7 @@ CanopyTagTest >> testApplyIgnoresTagsEntirely [
 	tree := Canopy new importTree: '{ "one" : 1 }' tags: #( irrelevantTag ).
 	component := CanopyBranchNode new.
 	object := CanopyTestObject new.
-	component at: #one put: (CanopyAccessor new object: object; selector: #one; yourself).
+	component at: #one put: (CanopyAccessor new object: object; writeSelector: #one; yourself).
 	component apply: tree.
 	self assert: object one equals: 1
 ]
@@ -32,8 +32,8 @@ CanopyTagTest >> testApplyWithTagOnlyAppliesMatchingTaggedValues [
 	component := CanopyBranchNode new.
 	object := CanopyTestObject new.
 	object one: 0; two: 0.
-	component at: #one put: (CanopyAccessor new object: object; selector: #one; yourself).
-	component at: #two put: (CanopyAccessor new object: object; selector: #two; yourself).
+	component at: #one put: (CanopyAccessor new object: object; writeSelector: #one; yourself).
+	component at: #two put: (CanopyAccessor new object: object; writeSelector: #two; yourself).
 	component apply: tree withTag: #config.
 	self assert: object one equals: 1.
 	self assert: object two equals: 0

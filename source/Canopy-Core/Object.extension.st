@@ -10,7 +10,7 @@ Object >> canopyBind: aPTGroup keys: aCollection [
 	aCollection do: [ :accessor |
 		(aPTGroup at: accessor) register: (CanopyAccessor new 
 			object: self;
-			selector: accessor) ]
+			writeSelector: accessor) ]
 ]
 
 { #category : '*Canopy-Core' }

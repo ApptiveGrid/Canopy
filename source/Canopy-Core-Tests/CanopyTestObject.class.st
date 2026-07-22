@@ -22,6 +22,12 @@ CanopyTestObject >> one: anObject [
 	one := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+CanopyTestObject >> oneCanopy [
+	<canopyValue: #one type: #metric arguments: #('The configured one value' gauge)>
+	^ one
+]
+
 { #category : 'accessing' }
 CanopyTestObject >> three [
 
