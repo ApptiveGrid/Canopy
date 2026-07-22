@@ -1,6 +1,6 @@
 Class {
 	#name : 'CanopyMetricMap',
-	#superclass : 'CanopyMetric',
+	#superclass : 'CanopyAccessor',
 	#category : 'Canopy-Metrics',
 	#package : 'Canopy-Metrics'
 }

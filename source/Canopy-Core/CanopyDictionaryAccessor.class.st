@@ -2,7 +2,8 @@ Class {
 	#name : 'CanopyDictionaryAccessor',
 	#superclass : 'CanopyLeafNode',
 	#instVars : [
-		'dictionary'
+		'dictionary',
+		'object'
 	],
 	#category : 'Canopy-Core',
 	#package : 'Canopy-Core'
@@ -35,6 +36,16 @@ CanopyDictionaryAccessor >> apply: aCanopyBranchNode withTag: aTag [
 { #category : 'accessing' }
 CanopyDictionaryAccessor >> dictionary: aCollection [
 	dictionary := aCollection
+]
+
+{ #category : 'initialization' }
+CanopyDictionaryAccessor >> initializeFromPragma: aPragma [
+	dictionary := object perform: aPragma method selector
+]
+
+{ #category : 'accessing' }
+CanopyDictionaryAccessor >> object: anObject [
+	object := anObject
 ]
 
 { #category : 'evaluating' }

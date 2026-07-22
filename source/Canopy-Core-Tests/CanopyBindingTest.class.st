@@ -82,8 +82,8 @@ CanopyBindingTest >> testMultipleAccessorRegistrationsAreAllNotified [
 	value := CanopyCell new.
 	objectA := CanopyTestObject new.
 	objectB := CanopyTestObject new.
-	accessorA := CanopyAccessor new object: objectA; selector: #one; yourself.
-	accessorB := CanopyAccessor new object: objectB; selector: #one; yourself.
+	accessorA := CanopyAccessor new object: objectA; writeSelector: #one; yourself.
+	accessorB := CanopyAccessor new object: objectB; writeSelector: #one; yourself.
 	value register: accessorA.
 	value register: accessorB.
 	value value: 99.
