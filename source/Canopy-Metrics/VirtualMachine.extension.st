@@ -73,7 +73,7 @@ VirtualMachine >> tenureCountCanopy [
 ]
 
 { #category : '*Canopy-Metrics' }
-VirtualMachine >> totalFullGCTimetCanopy [
+VirtualMachine >> totalFullGCTimeCanopy [
 	<canopyValue: #totalFullGCTime type: #metric arguments: #('The amount of time for a full GC' gauge)>
 	^ self totalFullGCTime
 ]

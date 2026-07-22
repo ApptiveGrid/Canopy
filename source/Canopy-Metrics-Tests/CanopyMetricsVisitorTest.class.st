@@ -25,6 +25,20 @@ CanopyMetricsVisitorTest >> testConvertMetricNameUsesFullTreePathAcrossPlainBran
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testExternalObjectMetricsHaveDistinctDescriptions [
+	"Fixed 2026-07-21: externalObjectTableSizeCanopy/externalObjectsCanopy (and their
+	pharo-metrics siblings, out of scope here per Norbert - only the Canopy pragmas in
+	this repo matter, pharo-metrics is not loaded once Canopy replaces it) shared the exact
+	same description despite measuring different things: total table size (including free
+	slots) vs. count of currently registered (non-nil) objects."
+	| metrics tableSize objects |
+	metrics := Canopy systemMetrics.
+	tableSize := metrics / #image / #externalObjectTableSize.
+	objects := metrics / #image / #externalObjects.
+	self deny: tableSize description equals: objects description
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMetricsVisitorTest >> testFormatMetricMapNestedInMetricGroupProducesPerLabelPrometheusLines [
 	"Regression test for the previously dead CanopyPrometheusVisitor>>visitMetricGroup:/
 	visitMetricMap: - CanopyMetricGroup/CanopyMetricMap did not exist before (see Canopy
