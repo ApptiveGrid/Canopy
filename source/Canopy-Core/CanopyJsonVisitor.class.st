@@ -7,7 +7,7 @@ Class {
 
 { #category : 'formatting' }
 CanopyJsonVisitor >> format: aNode [
-	^ NeoJSONWriter toString: (self visit: aNode)
+	^ STON toJsonString: (self visit: aNode)
 ]
 
 { #category : 'visiting' }
