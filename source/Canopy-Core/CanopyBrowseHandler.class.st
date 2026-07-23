@@ -58,8 +58,10 @@ CanopyBrowseHandler >> parsePayload: request [
 	^ request entity contents asCanopy
 ]
 
-{ #category : 'private' }
+{ #category : 'accessing' }
 CanopyBrowseHandler >> resolveNode: pathSegments [
+	"Not private: CanopyBrowseHtmlHandler reuses this to resolve the target node itself,
+	rather than duplicating navigation or depending on the JSON response shape."
 	| node |
 	node := self root.
 	pathSegments do: [ :segment |
