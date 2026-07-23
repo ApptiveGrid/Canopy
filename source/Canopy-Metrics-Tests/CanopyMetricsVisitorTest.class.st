@@ -32,10 +32,12 @@ CanopyMetricsVisitorTest >> testExternalObjectMetricsHaveDistinctDescriptions [
 	same description despite measuring different things: total table size (including free
 	slots) vs. count of currently registered (non-nil) objects."
 	| metrics tableSize objects |
-	metrics := Canopy systemMetrics.
+	[ ExternalSemaphoreTable canopyRegister.
+	metrics := Canopy instance.
 	tableSize := metrics / #image / #externalObjectTableSize.
 	objects := metrics / #image / #externalObjects.
-	self deny: tableSize description equals: objects description
+	self deny: tableSize description equals: objects description ]
+		ensure: [ Canopy reset ]
 ]
 
 { #category : 'as yet unclassified' }

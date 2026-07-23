@@ -1,6 +1,11 @@
 Extension { #name : 'ExternalSemaphoreTable' }
 
 { #category : '*Canopy-Metrics' }
+ExternalSemaphoreTable class >> canopyRegister [
+	^ (Canopy /+ #image) merge: (CanopyMappingBuilder new object: self; map: CanopyBranchNode new; build)
+]
+
+{ #category : '*Canopy-Metrics' }
 ExternalSemaphoreTable class >> externalObjectTableSizeCanopy [
 	<canopyValue: #externalObjectTableSize type: #metric arguments: #('The total size of the external object table, including free slots' gauge)>
 	^ self externalObjects size
