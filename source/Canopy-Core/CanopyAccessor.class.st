@@ -27,7 +27,7 @@ CanopyAccessor class >> type [
 CanopyAccessor >> acceptCanopy: aVisitor [
 	"Write-only accessors (no readSelector) contribute nothing to export/formatting -
 	they are not metrics, silently skipped rather than crashing on nil name/description."
-	readSelector ifNotNil: [ aVisitor visitMetric: self ]
+	^ readSelector ifNotNil: [ aVisitor visitMetric: self ]
 ]
 
 { #category : 'accessing' }

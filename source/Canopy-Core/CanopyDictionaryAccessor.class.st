@@ -20,8 +20,13 @@ CanopyDictionaryAccessor class >> type [
 	^ #dictionary 
 ]
 
+{ #category : 'visiting' }
+CanopyDictionaryAccessor >> acceptCanopy: aVisitor [
+	^ aVisitor visitDictionaryAccessor: self
+]
+
 { #category : 'target resize' }
-CanopyDictionaryAccessor >> apply: aCanopyBranchNode [ 
+CanopyDictionaryAccessor >> apply: aCanopyBranchNode [
 
 	aCanopyBranchNode keysAndValuesDo: [ :key :value |
 		dictionary at: key put: value value ]

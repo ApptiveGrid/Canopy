@@ -29,8 +29,8 @@ CanopyBranchNode >> @ aSymbol [
 ]
 
 { #category : 'visiting' }
-CanopyBranchNode >> acceptCanopy: aVisitor [ 
-	aVisitor visitBranchNode: self 
+CanopyBranchNode >> acceptCanopy: aVisitor [
+	^ aVisitor visitBranchNode: self
 ]
 
 { #category : 'target resize' }

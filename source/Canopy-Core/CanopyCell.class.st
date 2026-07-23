@@ -10,8 +10,13 @@ Class {
 }
 
 { #category : 'accessing' }
-CanopyCell class >> type [ 
+CanopyCell class >> type [
 	^ #value
+]
+
+{ #category : 'visiting' }
+CanopyCell >> acceptCanopy: aVisitor [
+	^ aVisitor visitCell: self
 ]
 
 { #category : 'initialization' }
