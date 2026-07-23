@@ -15,6 +15,12 @@ Class {
 }
 
 { #category : 'installing' }
+CanopyZincCounter class >> canopyRegister [
+	self install.
+	^ Canopy registerDomainNamed: #zinc with: (CanopyMappingBuilder new object: self instance; map: CanopyBranchNode new; build)
+]
+
+{ #category : 'installing' }
 CanopyZincCounter class >> install [
 	^ self instance install
 ]

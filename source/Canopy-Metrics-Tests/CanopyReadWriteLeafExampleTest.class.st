@@ -6,6 +6,28 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+CanopyReadWriteLeafExampleTest >> testComposedInstanceRegistersAsDomainViaCanopyBranch [
+	"Antwort auf die Instanz-basierte Haelfte der Registrierungsmechanismus-Frage (siehe
+	Canopy backlog, Registrierungsmechanismus): eine komponierte Instanz baut ueber ihre
+	eigene <canopyBranch>-Methode eine komponierte Struktur aus mehreren Sub-Komponenten,
+	die per canopyMapping + registerDomainNamed:with: als eigene Domain in Canopy landet -
+	kein neuer Mechanismus noetig, canopyBranch war schon da (bisher nur an Dictionary
+	demonstriert, siehe Canopy doc). fullKey loest auch ueber zwei Verschachtelungsebenen
+	korrekt auf (myApp_componentA_value)."
+	| app output |
+	[ app := CanopyComposedAppExample new.
+	app componentA value: 10.
+	app componentB value: 20.
+	Canopy registerDomainNamed: #myApp with: app canopyMapping.
+	self assert: (Canopy / #myApp / #componentA / #value) value equals: 10.
+	self assert: (Canopy / #myApp / #componentB / #value) value equals: 20.
+	output := CanopyPrometheusVisitor new format: Canopy instance.
+	self assert: (output includesSubstring: 'myApp_componentA_value{} 10 ').
+	self assert: (output includesSubstring: 'myApp_componentB_value{} 20 ') ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
 CanopyReadWriteLeafExampleTest >> testConfiguredLimitAndLiveUsageProduceExportedPercentage [
 	"Leitbeispiel aus Canopy roadmap, Terminologie Accessor/Metric-Richtungsambiguitaet: ein
 	konfiguriertes Memory-Limit (write Canopy -> component, ueber den #accessor-Pragma-Pfad)

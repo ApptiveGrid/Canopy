@@ -1,6 +1,11 @@
 Extension { #name : 'VirtualMachine' }
 
 { #category : '*Canopy-Metrics' }
+VirtualMachine class >> canopyRegister [
+	^ Canopy registerDomainNamed: #virtualMachine with: (CanopyMappingBuilder new object: Smalltalk vm; map: CanopyBranchNode new; build)
+]
+
+{ #category : '*Canopy-Metrics' }
 VirtualMachine >> edenSpaceSizeCanopy [
 	<canopyValue: #edenSpaceSize type: #metric arguments: #('The size of eden (new space) in bytes' gauge)>
 	^ self edenSpaceSize
