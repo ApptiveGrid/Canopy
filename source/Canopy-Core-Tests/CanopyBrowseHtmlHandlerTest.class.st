@@ -26,12 +26,34 @@ CanopyBrowseHtmlHandlerTest >> requestFor: method url: aUrl accept: anAcceptStri
 ]
 
 { #category : 'tests' }
-CanopyBrowseHtmlHandlerTest >> testHandleRequestDelegatesBranchToJsonEvenWhenAcceptIsHtml [
-	"Browsable HTML links for branches need trailing-slash canonicalisation for correct
-	relative resolution - deliberately out of scope for this first version, so branches
-	always get JSON regardless of Accept."
+CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersHtmlListForBranchWhenAcceptIsHtml [
+	"A branch now renders as an HTML page: its path as title plus one link per child node
+	(absolute hrefs). Order is dictionary-defined, so assert per child, not the whole string."
+	| body response |
 	[ self registerBrowseTestDomain.
-	self assert: (CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/sub' accept: 'text/html' body: nil)) contentType equals: ZnMimeType applicationJson
+	response := CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest' accept: 'text/html' body: nil).
+	self assert: response contentType equals: ZnMimeType textHtml.
+	body := response entity contents.
+	self assert: (body includesSubstring: '<h1>/browseTest</h1>').
+	self assert: (body includesSubstring: '<li><a href="/browseTest/a">a</a></li>').
+	self assert: (body includesSubstring: '<li><a href="/browseTest/sub">sub</a></li>')
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersNestedBranchChildLinksAbsolutely [
+	"Child links of a nested branch keep the full path from root, so following them lands on
+	the child, not a sibling - the trailing-slash resolution issue that had this deferred."
+	[ self registerBrowseTestDomain.
+	self assert: ((CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/sub' accept: 'text/html' body: nil)) entity contents includesSubstring: '<li><a href="/browseTest/sub/b">b</a></li>')
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHtmlHandlerTest >> testHandleRequestDelegatesBranchToJsonWhenAcceptIsNotHtml [
+	"Without text/html in Accept, a branch still gets plain JSON (the decorator only adds HTML)."
+	[ self registerBrowseTestDomain.
+	self assert: (CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/sub' accept: 'application/json' body: nil)) contentType equals: ZnMimeType applicationJson
 	] ensure: [ Canopy reset ]
 ]
 
