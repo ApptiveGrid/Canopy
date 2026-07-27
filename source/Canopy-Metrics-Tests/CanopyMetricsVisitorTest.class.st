@@ -90,3 +90,89 @@ CanopyMetricsVisitorTest >> testMetricMapAttributesAndValuesDoIteratesValueDicti
 	self assert: (seen at: 200) equals: 5.
 	self assert: (seen at: 404) equals: 2
 ]
+
+{ #category : 'export selection' }
+CanopyMetricsVisitorTest >> memoryMetric [
+	"A fresh, detached memorySize metric leaf, ready to be re-parented under a domain branch."
+	^ (CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build) / #memorySize
+]
+
+{ #category : 'export selection' }
+CanopyMetricsVisitorTest >> testExportMixesPharoPrefixedSystemDomainsAndBareApptiveGrid [
+	"The three-domain leitszenario (Canopy roadmap, Option B): image and virtualMachine carry a
+	pharo_ prefix, apptiveGrid stays bare - all in one configured export. Mirrors the old
+	pharo-metrics layout (image/virtualMachine nested under a #pharo group, apptiveGrid top-level)
+	without coupling the domain nodes to how they are exported."
+	| root vm image ag output |
+	root := CanopyBranchNode new.
+	vm := CanopyBranchNode new.
+	image := CanopyBranchNode new.
+	ag := CanopyBranchNode new.
+	root at: #virtualMachine put: vm.
+	root at: #image put: image.
+	root at: #apptiveGrid put: ag.
+	vm at: #memorySize put: self memoryMetric.
+	image at: #memorySize put: self memoryMetric.
+	ag at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new
+		addDomain: vm prefix: 'pharo';
+		addDomain: image prefix: 'pharo';
+		addDomain: ag;
+		export.
+	self assert: (output includesSubstring: 'pharo_virtualMachine_memorySize').
+	self assert: (output includesSubstring: 'pharo_image_memorySize').
+	self assert: (output includesSubstring: 'apptiveGrid_memorySize').
+	self deny: (output includesSubstring: 'pharo_apptiveGrid')
+]
+
+{ #category : 'export selection' }
+CanopyMetricsVisitorTest >> testExportOnlyIncludesConfiguredDomains [
+	"Not every domain has to be exported (Norbert, 2026-07-27): only domains added via addDomain:
+	appear; unconfigured siblings are silently skipped."
+	| root vm ag output |
+	root := CanopyBranchNode new.
+	vm := CanopyBranchNode new.
+	ag := CanopyBranchNode new.
+	root at: #virtualMachine put: vm.
+	root at: #apptiveGrid put: ag.
+	vm at: #memorySize put: self memoryMetric.
+	ag at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new addDomain: vm; export.
+	self assert: (output includesSubstring: 'virtualMachine_memorySize').
+	self deny: (output includesSubstring: 'apptiveGrid')
+]
+
+{ #category : 'export selection' }
+CanopyMetricsVisitorTest >> testExportWithPrefixPrependsPrefixToMetricName [
+	"addDomain:prefix: prepends prefix_ to every metric name of the domain. The bare,
+	un-prefixed name must not also appear (the prefix replaces the top-level namespace)."
+	| root vm output |
+	root := CanopyBranchNode new.
+	vm := CanopyBranchNode new.
+	root at: #virtualMachine put: vm.
+	vm at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new addDomain: vm prefix: 'pharo'; export.
+	self assert: (output includesSubstring: 'pharo_virtualMachine_memorySize').
+	self deny: (output includesSubstring: '# HELP virtualMachine_memorySize')
+]
+
+{ #category : 'export selection' }
+CanopyMetricsVisitorTest >> testExportWithoutConfiguredDomainsIsEmpty [
+	"A visitor with no configured domains exports nothing - format: is the unconfigured
+	single-object path, export is the configured-selection path."
+	self assert: CanopyPrometheusVisitor new export equals: ''
+]
+
+{ #category : 'export selection' }
+CanopyMetricsVisitorTest >> testExportWithoutPrefixWritesNameAsIs [
+	"apptiveGrid is written as-is (its own name is already the top segment), no extra prefix -
+	the other half of Option B (Canopy roadmap)."
+	| root ag output |
+	root := CanopyBranchNode new.
+	ag := CanopyBranchNode new.
+	root at: #apptiveGrid put: ag.
+	ag at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new addDomain: ag; export.
+	self assert: (output includesSubstring: 'apptiveGrid_memorySize').
+	self deny: (output includesSubstring: 'pharo')
+]

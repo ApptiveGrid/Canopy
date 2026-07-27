@@ -2,7 +2,9 @@ Class {
 	#name : 'CanopyPrometheusVisitor',
 	#superclass : 'CanopyVisitor',
 	#instVars : [
-		'stream'
+		'stream',
+		'exports',
+		'currentPrefix'
 	],
 	#category : 'Canopy-Metrics',
 	#package : 'Canopy-Metrics'
@@ -13,9 +15,39 @@ CanopyPrometheusVisitor >> asMilliseconds: timestamp [
 		^((timestamp offset: Duration zero) - DateAndTime unixEpoch) asMilliSeconds
 ]
 
+{ #category : 'configuring' }
+CanopyPrometheusVisitor >> addDomain: aNode [
+	"Export the aNode subtree without a prefix - the metric names are written as-is
+	(their own fullKey). See addDomain:prefix: for the prefixed variant."
+	exports add: aNode -> nil
+]
+
+{ #category : 'configuring' }
+CanopyPrometheusVisitor >> addDomain: aNode prefix: aString [
+	"Export the aNode subtree, prepending aString and an underscore to every metric name
+	(e.g. prefix: 'pharo' turns virtualMachine_memorySize into pharo_virtualMachine_memorySize).
+	The prefix is purely an export concern - it lives here, never on the domain node."
+	exports add: aNode -> aString
+]
+
 { #category : 'as yet unclassified' }
 CanopyPrometheusVisitor >> convertMetricName: aMetric [
-	^ aMetric fullKey
+	^ currentPrefix
+		ifNil: [ aMetric fullKey ]
+		ifNotNil: [ currentPrefix asString, '_', aMetric fullKey ]
+]
+
+{ #category : 'visiting' }
+CanopyPrometheusVisitor >> export [
+	"Format only the explicitly configured domains (see addDomain:/addDomain:prefix:),
+	each with its optional prefix. Returns an empty string when nothing was configured.
+	Contrast format:, which formats a single given object with no prefix."
+	stream := WriteStream on: ''.
+	exports do: [ :assoc |
+		currentPrefix := assoc value.
+		self visit: assoc key ].
+	currentPrefix := nil.
+	^ stream contents
 ]
 
 { #category : 'visiting' }
@@ -29,6 +61,7 @@ CanopyPrometheusVisitor >> format: anObject [
 CanopyPrometheusVisitor >> initialize [
 	super initialize.
 	stream := WriteStream on: ''.
+	exports := OrderedCollection new.
 ]
 
 { #category : 'visiting' }
