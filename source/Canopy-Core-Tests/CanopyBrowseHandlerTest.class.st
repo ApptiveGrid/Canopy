@@ -6,6 +6,11 @@ Class {
 }
 
 { #category : 'running' }
+CanopyBrowseHandlerTest >> putRequestFor: aUrl body: aString [
+	^ (ZnRequest put: aUrl) entity: (ZnEntity with: aString); yourself
+]
+
+{ #category : 'running' }
 CanopyBrowseHandlerTest >> registerBrowseTestDomain [
 	| branch sub |
 	branch := CanopyBranchNode new.
@@ -17,6 +22,44 @@ CanopyBrowseHandlerTest >> registerBrowseTestDomain [
 ]
 
 { #category : 'tests' }
+CanopyBrowseHandlerTest >> testHandlePutAppliesJsonObjectOntoExistingBranchIgnoringUnknownKeys [
+	"apply: (reused as-is, same semantics already used for config hot-reload/canopySetupFrom:)
+	overwrites keys that exist and silently ignores keys the target branch does not declare -
+	this is intentional, not a gap: components only expose the slots they declared via pragma,
+	an HTTP PUT cannot invent a new one."
+	[ self registerBrowseTestDomain.
+	self assert: (CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/browseTest/sub' body: '{"b":123,"unknown":1}')) entity contents
+		equals: '{"b":123}'
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHandlerTest >> testHandlePutOnBranchWithScalarPayloadReturnsBadRequest [
+	[ self registerBrowseTestDomain.
+	self assert: (CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/browseTest/sub' body: '42')) code equals: 400
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHandlerTest >> testHandlePutOnLeafWithObjectPayloadReturnsBadRequest [
+	[ self registerBrowseTestDomain.
+	self assert: (CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/browseTest/a' body: '{"x":1}')) code equals: 400
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHandlerTest >> testHandlePutOverwritesLeafValue [
+	[ self registerBrowseTestDomain.
+	self assert: (CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/browseTest/a' body: '''y''')) entity contents equals: '"y"'
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHandlerTest >> testHandlePutReturnsNotFoundForUnknownPath [
+	self assert: (CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/doesNotExist' body: '1')) code equals: 404
+]
+
+{ #category : 'tests' }
 CanopyBrowseHandlerTest >> testHandleRequestReturnsLeafValueForNestedPath [
 	[ self registerBrowseTestDomain.
 	self assert: (CanopyBrowseHandler new handleRequest: (ZnRequest get: 'http://localhost/browseTest/sub/b')) entity contents equals: '99'
@@ -25,8 +68,7 @@ CanopyBrowseHandlerTest >> testHandleRequestReturnsLeafValueForNestedPath [
 
 { #category : 'tests' }
 CanopyBrowseHandlerTest >> testHandleRequestReturnsMethodNotAllowedForNonGetRequests [
-	"Only GET is implemented so far (PR: HTTP Browse-Handler, GET). PUT (write) follows in a
-	separate PR - DELETE is used here so this test stays valid once PUT is added."
+	"Only GET/PUT are implemented - DELETE stays disallowed."
 	self assert: (CanopyBrowseHandler new handleRequest: (ZnRequest delete: 'http://localhost/browseTest/a')) code equals: 405
 ]
 

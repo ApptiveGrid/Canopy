@@ -9,21 +9,65 @@ Class {
 }
 
 { #category : 'public' }
-CanopyBrowseHandler >> handleRequest: request [
+CanopyBrowseHandler >> handleGet: request [
 	| node |
-	request method asUppercase = 'GET' ifFalse: [ ^ ZnResponse methodNotAllowed: request ].
-	node := self root.
-	[ request uri pathSegments do: [ :segment |
-		(node isKindOf: CanopyBranchNode) ifFalse: [ ^ self notFoundResponse: request ].
-		node := node / segment asSymbol ] ]
+	node := [ self resolveNode: request uri pathSegments ]
 		on: NotFound
 		do: [ :e | ^ self notFoundResponse: request ].
+	^ self jsonResponse: node
+]
+
+{ #category : 'public' }
+CanopyBrowseHandler >> handlePut: request [
+	| node payload |
+	node := [ self resolveNode: request uri pathSegments ]
+		on: NotFound
+		do: [ :e | ^ self notFoundResponse: request ].
+	payload := self parsePayload: request.
+	(payload isKindOf: CanopyBranchNode)
+		ifTrue: [
+			(node isKindOf: CanopyBranchNode) ifFalse: [ ^ ZnResponse badRequest: request ].
+			node apply: payload ]
+		ifFalse: [
+			(node isKindOf: CanopyBranchNode) ifTrue: [ ^ ZnResponse badRequest: request ].
+			node value: payload value ].
+	^ self jsonResponse: node
+]
+
+{ #category : 'public' }
+CanopyBrowseHandler >> handleRequest: request [
+	| method |
+	method := request method asUppercase.
+	method = 'GET' ifTrue: [ ^ self handleGet: request ].
+	method = 'PUT' ifTrue: [ ^ self handlePut: request ].
+	^ ZnResponse methodNotAllowed: request
+]
+
+{ #category : 'private' }
+CanopyBrowseHandler >> jsonResponse: node [
 	^ ZnResponse ok: (ZnEntity with: (CanopyJsonVisitor new format: node) type: ZnMimeType applicationJson)
 ]
 
 { #category : 'private' }
 CanopyBrowseHandler >> notFoundResponse: request [
 	^ ZnResponse notFound: request uri
+]
+
+{ #category : 'private' }
+CanopyBrowseHandler >> parsePayload: request [
+	^ request entity contents asCanopy
+]
+
+{ #category : 'accessing' }
+CanopyBrowseHandler >> resolveNode: pathSegments [
+	"Not private: CanopyBrowseHtmlHandler reuses this to resolve the target node itself,
+	rather than duplicating navigation or depending on the JSON response shape."
+	| node |
+	node := self root.
+	pathSegments do: [ :segment |
+		(node isKindOf: CanopyBranchNode) ifFalse: [ NotFound signalFor: segment in: node ].
+		node := node / segment asSymbol ].
+	^ node
 ]
 
 { #category : 'accessing' }
