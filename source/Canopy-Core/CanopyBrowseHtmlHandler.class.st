@@ -16,23 +16,54 @@ CanopyBrowseHtmlHandler >> handleRequest: request [
 
 { #category : 'private' }
 CanopyBrowseHtmlHandler >> handleHtmlRequest: request [
-	"HTML is only rendered for leaf values (the concrete ask: show a value, edit it via PUT).
-	Branches still get JSON regardless of Accept - browsable HTML links for branches need
-	trailing-slash canonicalization for correct relative resolution, deliberately out of scope
-	for this first version."
+	"A branch renders as its title plus a list of links to its children (GET); a leaf renders
+	its value in an editable field that PUTs the new value. PUT on a branch is not a leaf edit,
+	so it delegates to the JSON handler (apply: semantics) unchanged."
 	| method node |
 	method := request method asUppercase.
 	(method = 'GET' or: [ method = 'PUT' ]) ifFalse: [ ^ ZnResponse methodNotAllowed: request ].
 	node := [ self restHandler resolveNode: request uri pathSegments ]
 		on: NotFound
 		do: [ :e | ^ ZnResponse notFound: request uri ].
-	(node isKindOf: CanopyBranchNode) ifTrue: [ ^ self restHandler handleRequest: request ].
+	(node isKindOf: CanopyBranchNode) ifTrue: [
+		method = 'GET' ifFalse: [ ^ self restHandler handleRequest: request ].
+		^ ZnResponse ok: (ZnEntity with: (self branchPageFor: node path: request uri path) type: ZnMimeType textHtml) ].
 	method = 'PUT' ifTrue: [
 		| writeResponse |
 		writeResponse := self restHandler handlePut: request.
 		writeResponse isSuccess ifFalse: [ ^ writeResponse ].
 		node := self restHandler resolveNode: request uri pathSegments ].
 	^ ZnResponse ok: (ZnEntity with: (self pageFor: node path: request uri path) type: ZnMimeType textHtml)
+]
+
+{ #category : 'private' }
+CanopyBrowseHtmlHandler >> branchPageFor: node path: pathString [
+	"Title (the current path) plus one link per child node. Child links are absolute
+	(rooted at /) so they resolve correctly regardless of a trailing slash on the request URI."
+	^ String streamContents: [ :s |
+		s nextPutAll: '<!DOCTYPE html><html><body>'.
+		s nextPutAll: '<h1>/'; nextPutAll: (self htmlEscape: pathString); nextPutAll: '</h1>'.
+		s nextPutAll: '<ul>'.
+		node keysAndValuesDo: [ :key :child |
+			s nextPutAll: '<li><a href="';
+				nextPutAll: (self htmlEscape: (self childHref: pathString key: key));
+				nextPutAll: '">';
+				nextPutAll: (self htmlEscape: key asString);
+				nextPutAll: '</a></li>' ].
+		s nextPutAll: '</ul></body></html>' ]
+]
+
+{ #category : 'private' }
+CanopyBrowseHtmlHandler >> childHref: pathString key: key [
+	"Absolute path to a child: /<currentPath>/<key>, tolerant of a leading or trailing slash
+	on pathString and of an empty pathString (the root)."
+	| trimmed |
+	trimmed := pathString.
+	(trimmed beginsWith: '/') ifTrue: [ trimmed := trimmed allButFirst ].
+	(trimmed endsWith: '/') ifTrue: [ trimmed := trimmed allButLast ].
+	^ trimmed isEmpty
+		ifTrue: [ '/' , key asString ]
+		ifFalse: [ '/' , trimmed , '/' , key asString ]
 ]
 
 { #category : 'private' }
