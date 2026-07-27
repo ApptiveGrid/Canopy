@@ -38,19 +38,30 @@ CanopyBrowseHtmlHandler >> handleHtmlRequest: request [
 
 { #category : 'private' }
 CanopyBrowseHtmlHandler >> branchPageFor: node path: pathString [
-	"Title (the current path) plus one link per child node. Child links are absolute
-	(rooted at /) so they resolve correctly regardless of a trailing slash on the request URI."
+	"Title (the current path) plus a table with one row per child. A branch child is a link to
+	drill in; a leaf child gets its value in an editable input next to its name, with a Save
+	button that PUTs to the child's absolute URL. Child URLs are absolute (rooted at /) so they
+	resolve regardless of a trailing slash on the request URI."
 	^ String streamContents: [ :s |
 		s nextPutAll: '<!DOCTYPE html><html><body>'.
 		s nextPutAll: '<h1>/'; nextPutAll: (self htmlEscape: pathString); nextPutAll: '</h1>'.
-		s nextPutAll: '<ul>'.
+		s nextPutAll: '<table>'.
 		node keysAndValuesDo: [ :key :child |
-			s nextPutAll: '<li><a href="';
-				nextPutAll: (self htmlEscape: (self childHref: pathString key: key));
-				nextPutAll: '">';
-				nextPutAll: (self htmlEscape: key asString);
-				nextPutAll: '</a></li>' ].
-		s nextPutAll: '</ul></body></html>' ]
+			| href |
+			href := self childHref: pathString key: key.
+			s nextPutAll: '<tr>'.
+			(child isKindOf: CanopyBranchNode)
+				ifTrue: [
+					s nextPutAll: '<td><a href="'; nextPutAll: (self htmlEscape: href); nextPutAll: '">';
+						nextPutAll: (self htmlEscape: key asString); nextPutAll: '</a></td><td></td>' ]
+				ifFalse: [
+					s nextPutAll: '<td>'; nextPutAll: (self htmlEscape: key asString); nextPutAll: '</td>'.
+					s nextPutAll: '<td><input value="'; nextPutAll: (self htmlEscape: (CanopyJsonVisitor new format: child));
+						nextPutAll: '"><button data-href="'; nextPutAll: (self htmlEscape: href); nextPutAll: '">Save</button></td>' ].
+			s nextPutAll: '</tr>' ].
+		s nextPutAll: '</table>'.
+		s nextPutAll: '<script>document.querySelectorAll("button[data-href]").forEach(function(b){b.addEventListener("click",function(){fetch(b.getAttribute("data-href"),{method:"PUT",body:b.previousElementSibling.value}).then(function(){location.reload();});});});</script>'.
+		s nextPutAll: '</body></html>' ]
 ]
 
 { #category : 'private' }

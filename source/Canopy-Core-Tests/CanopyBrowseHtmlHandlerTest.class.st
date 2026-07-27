@@ -26,26 +26,36 @@ CanopyBrowseHtmlHandlerTest >> requestFor: method url: aUrl accept: anAcceptStri
 ]
 
 { #category : 'tests' }
-CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersHtmlListForBranchWhenAcceptIsHtml [
-	"A branch now renders as an HTML page: its path as title plus one link per child node
-	(absolute hrefs). Order is dictionary-defined, so assert per child, not the whole string."
+CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersBranchAsTableWithLeafInputsAndBranchLinks [
+	"A branch renders as a table: leaf children get their value in an inline input next to the
+	name (Save PUTs to the child URL); branch children are links to drill in. Order is
+	dictionary-defined, so assert per child, not the whole string."
 	| body response |
 	[ self registerBrowseTestDomain.
 	response := CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest' accept: 'text/html' body: nil).
 	self assert: response contentType equals: ZnMimeType textHtml.
 	body := response entity contents.
 	self assert: (body includesSubstring: '<h1>/browseTest</h1>').
-	self assert: (body includesSubstring: '<li><a href="/browseTest/a">a</a></li>').
-	self assert: (body includesSubstring: '<li><a href="/browseTest/sub">sub</a></li>')
+	self assert: (body includesSubstring: '<table>').
+	"leaf child a -> name cell + editable input + Save button targeting its URL"
+	self assert: (body includesSubstring: '<td>a</td>').
+	self assert: (body includesSubstring: 'value="&quot;x&quot;"').
+	self assert: (body includesSubstring: 'data-href="/browseTest/a"').
+	"branch child sub -> link to drill in"
+	self assert: (body includesSubstring: '<a href="/browseTest/sub">sub</a>')
 	] ensure: [ Canopy reset ]
 ]
 
 { #category : 'tests' }
-CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersNestedBranchChildLinksAbsolutely [
-	"Child links of a nested branch keep the full path from root, so following them lands on
-	the child, not a sibling - the trailing-slash resolution issue that had this deferred."
+CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersLeafChildAsInlineInputWithAbsoluteHref [
+	"A leaf child inside a (nested) branch table gets its value in an input and a Save button
+	whose data-href is the child's full path from root, so the PUT lands on the child."
+	| body |
 	[ self registerBrowseTestDomain.
-	self assert: ((CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/sub' accept: 'text/html' body: nil)) entity contents includesSubstring: '<li><a href="/browseTest/sub/b">b</a></li>')
+	body := (CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/sub' accept: 'text/html' body: nil)) entity contents.
+	self assert: (body includesSubstring: '<td>b</td>').
+	self assert: (body includesSubstring: 'value="99"').
+	self assert: (body includesSubstring: 'data-href="/browseTest/sub/b"')
 	] ensure: [ Canopy reset ]
 ]
 
