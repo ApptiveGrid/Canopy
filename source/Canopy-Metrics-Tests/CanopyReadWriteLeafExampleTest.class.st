@@ -22,8 +22,8 @@ CanopyReadWriteLeafExampleTest >> testComposedInstanceRegistersAsDomainViaCanopy
 	self assert: (Canopy / #myApp / #componentA / #value) value equals: 10.
 	self assert: (Canopy / #myApp / #componentB / #value) value equals: 20.
 	output := CanopyPrometheusVisitor new format: Canopy instance.
-	self assert: (output includesSubstring: 'myApp_componentA_value{} 10 ').
-	self assert: (output includesSubstring: 'myApp_componentB_value{} 20 ') ]
+	self assert: (output includesSubstring: 'myApp_componentA_value 10 ').
+	self assert: (output includesSubstring: 'myApp_componentB_value 20 ') ]
 		ensure: [ Canopy reset ]
 ]
 
@@ -44,5 +44,5 @@ CanopyReadWriteLeafExampleTest >> testConfiguredLimitAndLiveUsageProduceExported
 	self assert: (tree / #usedMemory) value equals: 250.
 	self assert: (tree / #usagePercentage) value equals: 25.
 	output := CanopyPrometheusVisitor new format: tree.
-	self assert: (output includesSubstring: 'usagePercentage{} 25 ')
+	self assert: (output includesSubstring: 'usagePercentage 25 ')
 ]
