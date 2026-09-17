@@ -6,7 +6,7 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-CanopyMetricsTestObject >> memorySize [
+CanopyMetricsTestObject >> memorySizeCanopy [
 	<canopyValue: #memorySize>
 	^ CanopyMetric new
 		type: #gauge;
@@ -15,7 +15,7 @@ CanopyMetricsTestObject >> memorySize [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyMetricsTestObject >> responsesByStatus [
+CanopyMetricsTestObject >> responsesByStatusCanopy [
 	<canopyValue: #responsesByStatus>
 	^ CanopyMetricMap new
 		type: #gauge;

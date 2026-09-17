@@ -60,9 +60,11 @@ VirtualMachine >> maxExternalSemaphoresCanopy [
 ]
 
 { #category : '*Canopy-Metrics' }
-VirtualMachine >> maximumExternalSemaphoresCanopy: anInteger [
-	<canopyValue: #maximumExternalSemaphores>
-	^ self maxExternalSemaphoresSilently: anInteger 
+VirtualMachine >> maxExternalSemaphoresCanopy: anInteger [
+	"The same key as the reading declaration above: one leaf that can be read and written,
+	instead of the same value sitting twice in the tree under two names."
+	<canopyValue: #maxExternalSemaphores>
+	^ self maxExternalSemaphoresSilently: anInteger
 ]
 
 { #category : '*Canopy-Metrics' }
