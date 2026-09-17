@@ -6,6 +6,18 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+CanopyAccessorTest >> testALeafCanReadFromABlockInsteadOfAComponent [
+	"Runtime values have no pragma to declare them - the block is the object and evaluating it is
+	the read. The value stays live, which is the whole point: it is worked out per scrape."
+	| count leaf |
+	count := 0.
+	leaf := CanopyAccessor reading: [ count ].
+	self assert: leaf value equals: 0.
+	count := 42.
+	self assert: leaf value equals: 42
+]
+
+{ #category : 'as yet unclassified' }
 CanopyAccessorTest >> testAcceptCanopySkipsWriteOnlyAccessorsInsteadOfCrashing [
 	"Found 2026-07-21 while sanity-checking format: over the real Canopy systemMetrics
 	tree: VirtualMachine>>maxExternalSemaphoresCanopy: is a write-only declaration

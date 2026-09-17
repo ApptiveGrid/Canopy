@@ -142,6 +142,30 @@ CanopyMetricsVisitorTest >> testAFamilyIsWrittenAsHelpTypeAndOneLine [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testABlockBackedMetricExportsLikeAnyOther [
+	"The shape every runtime metric of the servers will take: no pragma anywhere, the block hands
+	back a full holder, and the exported line is indistinguishable from a declared one - inherited
+	label included. All of #apptiveGrid and the 23 #soil values are built like this today."
+	| count root soil |
+	count := 41.
+	root := CanopyBranchNode new.
+	soil := CanopyBranchNode new.
+	root at: #soil put: soil.
+	root labelAt: #stage put: 'production'.
+	soil
+		at: #objectsSerialized
+		put: (CanopyAccessor reading: [ CanopyMetric new
+			type: #counter;
+			description: 'the number of serialized objects';
+			value: count ]).
+	self assert: ((CanopyPrometheusVisitor new format: root) lines last
+		beginsWith: 'soil_objectsSerialized{stage="production"} 41 ').
+	count := 42.
+	self assert: ((CanopyPrometheusVisitor new format: root) lines last
+		beginsWith: 'soil_objectsSerialized{stage="production"} 42 ')
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMetricsVisitorTest >> testAMetricWithoutLabelsIsWrittenWithoutBraces [
 	"An empty label set used to come out as name{} 1024, because the check was for nil and the
 	dictionary is merely empty. Both forms are valid exposition; this one reads like every
