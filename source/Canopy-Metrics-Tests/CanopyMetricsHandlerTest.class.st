@@ -36,6 +36,26 @@ CanopyMetricsHandlerTest >> testHandleRequestWithoutConfigExportsAllRegisteredDo
 ]
 
 { #category : 'tests' }
+CanopyMetricsHandlerTest >> testHandleRequestExportsAMixedTreeWithoutTrippingOverConfiguration [
+	"Without configured domains the handler formats the whole Canopy tree - which is where
+	configuration and metrics actually meet, since both live in it. A single config cell used to
+	end the request in a doesNotUnderstand: the visitor had no visitCell:. The claim that
+	configuration and metrics are one tree held for the structure, not for the export."
+	| mapping config response body |
+	mapping := CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build.
+	config := CanopyBranchNode new.
+	config at: #port put: (CanopyCell new value: 5432).
+	[ Canopy instance registerDomainNamed: #testMetrics with: mapping.
+	Canopy instance registerDomainNamed: #testConfig with: config.
+	response := CanopyMetricsHandler new handleRequest: nil.
+	body := response entity contents.
+	self assert: response isSuccess.
+	self assert: (body includesSubstring: 'testMetrics_memorySize 1024 ').
+	self deny: (body includesSubstring: '5432')
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
 CanopyMetricsHandlerTest >> testHandleRequestWithConfiguredPrefixPrependsPrefix [
 	"A configured domain can carry an export prefix (Option B, Canopy roadmap) - the metric
 	name is prefixed, mirroring the old pharo_ namespace for system domains."

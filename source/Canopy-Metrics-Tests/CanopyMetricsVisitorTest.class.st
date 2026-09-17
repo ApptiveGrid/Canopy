@@ -77,6 +77,59 @@ CanopyMetricsVisitorTest >> memoryMetric [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testALeafThatIsReadableAndWritableButNoMetricWritesNothing [
+	"A leaf carrying both selectors used to slip through the export filter and die on a nil name
+	in the HELP line - the very shape CanopyAccessorTest calls the point of the unification. It
+	answers no readings, so it contributes nothing, header included."
+	| root leaf output |
+	root := CanopyBranchNode new.
+	leaf := CanopyAccessor new
+		object: (CanopyRootTestObject new one: 42; yourself);
+		readSelector: #one;
+		writeSelector: #one:;
+		yourself.
+	root at: #readableConfig put: leaf.
+	root at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new format: root.
+	self deny: (output includesSubstring: 'readableConfig').
+	self assert: (output includesSubstring: 'memorySize 1024 ')
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testAConfigValueInAnExportedTreeCostsNoOutput [
+	"The handler exports the whole tree by default, configuration domains included. A config cell
+	in there used to end the scrape in a doesNotUnderstand: the visitor knew no visitCell:."
+	| root output |
+	root := CanopyBranchNode new.
+	root at: #port put: (CanopyCell new value: 5432).
+	root at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new format: root.
+	self deny: (output includesSubstring: '5432').
+	self deny: (output includesSubstring: 'port').
+	self assert: (output includesSubstring: 'memorySize 1024 ')
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testAFamilyIsWrittenAsHelpTypeAndOneLine [
+	"The parity guard proper: the exact shape of what a scrape receives, not a fragment of it.
+	Everything the migration must not change quietly is in these three lines - the name built
+	from the tree path, the help text and type taken from the value, the inherited label, the
+	value itself and the timestamp."
+	| root vm lines |
+	root := CanopyBranchNode new.
+	vm := CanopyBranchNode new.
+	root at: #virtualMachine put: vm.
+	vm at: #memorySize put: self memoryMetric.
+	root labelAt: #stage put: 'production'.
+	lines := (CanopyPrometheusVisitor new format: root) lines.
+	self assert: lines size equals: 3.
+	self assert: lines first equals: '# HELP virtualMachine_memorySize Memory size'.
+	self assert: lines second equals: '# TYPE virtualMachine_memorySize gauge'.
+	self assert: (lines third beginsWith: 'virtualMachine_memorySize{stage="production"} 1024 ').
+	self assert: (lines third substrings last allSatisfy: [ :each | each isDigit ])
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMetricsVisitorTest >> testAMetricWithoutLabelsIsWrittenWithoutBraces [
 	"An empty label set used to come out as name{} 1024, because the check was for nil and the
 	dictionary is merely empty. Both forms are valid exposition; this one reads like every
