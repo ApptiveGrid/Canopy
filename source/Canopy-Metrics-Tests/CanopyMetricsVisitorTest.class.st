@@ -77,6 +77,35 @@ CanopyMetricsVisitorTest >> memoryMetric [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testAMetricWithoutLabelsIsWrittenWithoutBraces [
+	"An empty label set used to come out as name{} 1024, because the check was for nil and the
+	dictionary is merely empty. Both forms are valid exposition; this one reads like every
+	example in the Prometheus documentation."
+	| root output |
+	root := CanopyBranchNode new.
+	root at: #memorySize put: self memoryMetric.
+	output := CanopyPrometheusVisitor new format: root.
+	self assert: (output includesSubstring: 'memorySize 1024 ').
+	self deny: (output includesSubstring: '{}')
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testLabelsAreWrittenSortedByName [
+	"Two labels from two levels of the tree, written in a fixed order rather than in the one the
+	key hashes happen to produce - otherwise adding a third label reshuffles the first two and
+	breaks every test that pins the line."
+	| root branch output |
+	root := CanopyBranchNode new.
+	branch := CanopyBranchNode new.
+	root at: #virtualMachine put: branch.
+	branch at: #memorySize put: self memoryMetric.
+	root labelAt: #stage put: 'production'.
+	branch labelAt: #region put: 'eu'.
+	output := CanopyPrometheusVisitor new format: root.
+	self assert: (output includesSubstring: '{region="eu",stage="production"}')
+]
+
+{ #category : 'as yet unclassified' }
 CanopyMetricsVisitorTest >> testLabelSetAtTheRootAppearsOnEveryMetricLine [
 	"The stage label of the deployed servers hangs at the root and has to reach every line -
 	pharo-metrics does it with attributes ^ parent attributes , attributes. Before labels walked

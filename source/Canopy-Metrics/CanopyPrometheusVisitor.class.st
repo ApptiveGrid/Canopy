@@ -111,12 +111,16 @@ CanopyPrometheusVisitor >> writeHelpLine: aNode holder: aMetric [
 
 { #category : 'visiting' }
 CanopyPrometheusVisitor >> writeName: aName value: aValue attributes: aDictionary [
+	"Sorted by label name, and no braces at all when there are none. The order a Dictionary
+	answers falls out of the key hashes - neither the declared nor the alphabetical one - and it
+	shifts as soon as a label is added. Prometheus treats labels as a set and is indifferent to
+	both; tests that compare the line as a string are not."
 	stream nextPutAll: aName.
-	aDictionary notNil ifTrue: [ 
+	aDictionary ifNotEmpty: [
 		stream nextPut: ${.
-		aDictionary associations
-			do: [ :assoc | 
-				stream 
+		(aDictionary associations sorted: [ :a :b | a key asString <= b key asString ])
+			do: [ :assoc |
+				stream
 					nextPutAll: assoc key;
 					nextPutAll: '="';
 					nextPutAll: assoc value asString;

@@ -40,7 +40,7 @@ CanopyZincCounterTest >> testRegisterZincMetricsRegistersZincDomainWithExpectedV
 	CanopyZincCounter instance handleAnnouncement: (CanopyZincTestAnnouncement new responseCode: 404 duration: 20; yourself).
 	Canopy registerZincMetrics.
 	output := CanopyPrometheusVisitor new format: Canopy instance.
-	self assert: (output includesSubstring: 'zinc_httpRequests{} 2 ').
+	self assert: (output includesSubstring: 'zinc_httpRequests 2 ').
 	self assert: (output includesSubstring: 'zinc_httpResponses{status="200"} 1 ').
 	self assert: (output includesSubstring: 'zinc_httpResponses{status="404"} 1 ').
 	self assert: (output includesSubstring: '# HELP zinc_duration Average duration of requests') ]
