@@ -11,7 +11,6 @@ Class {
 
 { #category : 'accessing' }
 CanopyMemoryLimitExampleObject >> memoryLimit [
-	<canopyValue: #memoryLimit type: #accessor arguments: #()>
 	^ memoryLimit
 ]
 
@@ -20,9 +19,17 @@ CanopyMemoryLimitExampleObject >> memoryLimit: anInteger [
 	memoryLimit := anInteger
 ]
 
+{ #category : 'canopy' }
+CanopyMemoryLimitExampleObject >> memoryLimitCanopy: anInteger [
+	"The configured half of the example: a one-argument projection that hands the value to the
+	domain setter. The derived percentage below is the metric half."
+	<canopyValue: #memoryLimit>
+	self memoryLimit: anInteger
+]
+
 { #category : 'as yet unclassified' }
 CanopyMemoryLimitExampleObject >> usagePercentageCanopy [
-	<canopyValue: #usagePercentage type: #metric arguments: #()>
+	<canopyValue: #usagePercentage>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'Percentage of the configured memory limit currently in use';
@@ -36,7 +43,7 @@ CanopyMemoryLimitExampleObject >> usedMemory: anInteger [
 
 { #category : 'as yet unclassified' }
 CanopyMemoryLimitExampleObject >> usedMemoryCanopy [
-	<canopyValue: #usedMemory type: #metric arguments: #()>
+	<canopyValue: #usedMemory>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'Currently used memory';

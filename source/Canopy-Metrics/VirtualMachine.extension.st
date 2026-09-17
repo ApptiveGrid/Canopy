@@ -7,7 +7,7 @@ VirtualMachine class >> canopyRegister [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> edenSpaceSizeCanopy [
-	<canopyValue: #edenSpaceSize type: #metric arguments: #()>
+	<canopyValue: #edenSpaceSize>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The size of eden (new space) in bytes';
@@ -16,7 +16,7 @@ VirtualMachine >> edenSpaceSizeCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> extraVMMemoryCanopy [
-	<canopyValue: #extraVMMemory type: #metric arguments: #()>
+	<canopyValue: #extraVMMemory>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The size of extra memory allocated on the heap';
@@ -25,7 +25,7 @@ VirtualMachine >> extraVMMemoryCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> freeOldSpaceSizeCanopy [
-	<canopyValue: #freeOldSpaceSize type: #metric arguments: #()>
+	<canopyValue: #freeOldSpaceSize>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The size of freed memory from old space';
@@ -34,7 +34,7 @@ VirtualMachine >> freeOldSpaceSizeCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> fullGCCountCanopy [
-	<canopyValue: #fullGCCount type: #metric arguments: #()>
+	<canopyValue: #fullGCCount>
 	^ CanopyMetric new
 		type: #counter;
 		description: 'The amount of full garbage collection runs';
@@ -43,7 +43,7 @@ VirtualMachine >> fullGCCountCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> incrementalGCCountCanopy [
-	<canopyValue: #incrementalGCCount type: #metric arguments: #()>
+	<canopyValue: #incrementalGCCount>
 	^ CanopyMetric new
 		type: #counter;
 		description: 'The amount of incremental garbage collection runs';
@@ -52,7 +52,7 @@ VirtualMachine >> incrementalGCCountCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> maxExternalSemaphoresCanopy [
-	<canopyValue: #maxExternalSemaphores type: #metric arguments: #()>
+	<canopyValue: #maxExternalSemaphores>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The maximum of available external semaphores';
@@ -61,13 +61,13 @@ VirtualMachine >> maxExternalSemaphoresCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> maximumExternalSemaphoresCanopy: anInteger [
-	<canopyValue: #maximumExternalSemaphores type: #accessor arguments: #()>
+	<canopyValue: #maximumExternalSemaphores>
 	^ self maxExternalSemaphoresSilently: anInteger 
 ]
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> memoryEndCanopy [
-	<canopyValue: #memoryEnd type: #metric arguments: #()>
+	<canopyValue: #memoryEnd>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The end of memory';
@@ -76,7 +76,7 @@ VirtualMachine >> memoryEndCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> memorySizeCanopy [
-	<canopyValue: #memorySize type: #metric arguments: #()>
+	<canopyValue: #memorySize>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The size of memory';
@@ -85,7 +85,7 @@ VirtualMachine >> memorySizeCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> oldSpaceCanopy [
-	<canopyValue: #oldSpace type: #metric arguments: #()>
+	<canopyValue: #oldSpace>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The size of old space';
@@ -94,7 +94,7 @@ VirtualMachine >> oldSpaceCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> oldSpaceEndCanopy [
-	<canopyValue: #oldSpaceEnd type: #metric arguments: #()>
+	<canopyValue: #oldSpaceEnd>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The end of old space';
@@ -103,7 +103,7 @@ VirtualMachine >> oldSpaceEndCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> tenureCountCanopy [
-	<canopyValue: #tenureCount type: #metric arguments: #()>
+	<canopyValue: #tenureCount>
 	^ CanopyMetric new
 		type: #counter;
 		description: 'The amount of tenured objects';
@@ -112,7 +112,7 @@ VirtualMachine >> tenureCountCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> totalFullGCTimeCanopy [
-	<canopyValue: #totalFullGCTime type: #metric arguments: #()>
+	<canopyValue: #totalFullGCTime>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The amount of time for a full GC';
@@ -121,7 +121,7 @@ VirtualMachine >> totalFullGCTimeCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> totalIncrementalGCTimeCanopy [
-	<canopyValue: #totalIncrementalGCTime type: #metric arguments: #()>
+	<canopyValue: #totalIncrementalGCTime>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The amount of time for a incremental GC';
@@ -130,7 +130,7 @@ VirtualMachine >> totalIncrementalGCTimeCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> youngSpaceEndCanopy [
-	<canopyValue: #youngSpaceEnd type: #metric arguments: #()>
+	<canopyValue: #youngSpaceEnd>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The end of young space';
@@ -139,7 +139,7 @@ VirtualMachine >> youngSpaceEndCanopy [
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine >> youngSpaceSizeCanopy [
-	<canopyValue: #youngSpaceSize type: #metric arguments: #()>
+	<canopyValue: #youngSpaceSize>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The size of young space';

@@ -51,18 +51,37 @@ CanopyMappingBuilder >> buildComplexProperties [
 
 { #category : 'as yet unclassified' }
 CanopyMappingBuilder >> buildLocalProperties [
-	| pragmas |
-	pragmas := Pragma 
-		allNamed: #canopyValue:type:arguments:
-		from: object class 
-		to: Object.
-	(pragmas size > 0) ifTrue: [ 
-		pragmas do: [ :pragma | 
-			map 
-				at: (pragma arguments first)
-				put: ((CanopyLeafNode withType: pragma arguments second) new 
-					object: object;
-					initializeFromPragma: pragma) ] ].
+	"One leaf per key, however many declarations point at it: a getter and a setter for the same
+	key are two pragmas and one node, which is the only way a value can be read and written at
+	the same place. Two declarations in the same direction are a mistake and say so out loud -
+	they used to silently overwrite each other, depending on the order the pragmas came in."
+	| leaves |
+	leaves := Dictionary new.
+	self canopyPragmas do: [ :pragma |
+		(leaves
+			at: pragma arguments first
+			ifAbsentPut: [ (self leafClassFor: pragma) new object: object ])
+				initializeFromPragma: pragma ].
+	leaves keysAndValuesDo: [ :key :leaf |
+		map at: key put: leaf ]
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMappingBuilder >> canopyPragmas [
+	"Both forms of the declaration: the marker that carries nothing but the key, and the older
+	one that also carried a type and arguments. The old form stays readable, so the declarations
+	in the pinned downstream repos keep working while they are moved over."
+	^ (Pragma allNamed: #canopyValue: from: object class to: Object)
+		, (Pragma allNamed: #canopyValue:type:arguments: from: object class to: Object)
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMappingBuilder >> leafClassFor: aPragma [
+	"Only the old form still names a node kind, and only #dictionary picks a different class -
+	a leaf that swallows a whole subtree instead of a single value."
+	^ aPragma arguments size = 3
+		ifTrue: [ CanopyLeafNode withType: aPragma arguments second ]
+		ifFalse: [ CanopyAccessor ]
 ]
 
 { #category : 'initialization' }

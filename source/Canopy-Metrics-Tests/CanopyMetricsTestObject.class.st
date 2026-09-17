@@ -7,7 +7,7 @@ Class {
 
 { #category : 'as yet unclassified' }
 CanopyMetricsTestObject >> memorySize [
-	<canopyValue: #memorySize type: #metric arguments: #()>
+	<canopyValue: #memorySize>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'Memory size';
@@ -16,7 +16,7 @@ CanopyMetricsTestObject >> memorySize [
 
 { #category : 'as yet unclassified' }
 CanopyMetricsTestObject >> responsesByStatus [
-	<canopyValue: #responsesByStatus type: #metric arguments: #()>
+	<canopyValue: #responsesByStatus>
 	^ CanopyMetricMap new
 		type: #gauge;
 		description: 'Responses by status';

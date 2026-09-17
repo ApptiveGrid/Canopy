@@ -2,7 +2,7 @@ Extension { #name : 'Process' }
 
 { #category : '*Canopy-Metrics' }
 Process class >> activeProcessListCanopy [ 
-	<canopyValue: #processesActive type: #metric arguments: #()>
+	<canopyValue: #processesActive>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The number of active processes';
@@ -16,7 +16,7 @@ Process class >> canopyRegister [
 
 { #category : '*Canopy-Metrics' }
 Process class >> terminatedProcessListCanopy [
-	<canopyValue: #processesTerminated type: #metric arguments: #()>
+	<canopyValue: #processesTerminated>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The number of terminated processes';

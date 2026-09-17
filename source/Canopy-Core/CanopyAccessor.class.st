@@ -4,10 +4,7 @@ Class {
 	#instVars : [
 		'object',
 		'readSelector',
-		'writeSelector',
-		'name',
-		'description',
-		'valueType'
+		'writeSelector'
 	],
 	#category : 'Canopy-Core',
 	#package : 'Canopy-Core'
@@ -26,37 +23,24 @@ CanopyAccessor class >> type [
 { #category : 'visiting' }
 CanopyAccessor >> acceptCanopy: aVisitor [
 	"Write-only accessors (no readSelector) contribute nothing to export/formatting -
-	they are not metrics, silently skipped rather than crashing on nil name/description."
+	they have nothing to read and therefore nothing to export."
 	^ readSelector ifNotNil: [ aVisitor visitMetric: self ]
-]
-
-{ #category : 'accessing' }
-CanopyAccessor >> description [
-	^ description
-]
-
-{ #category : 'testing' }
-CanopyAccessor >> hasDescription [
-	^ description notNil
 ]
 
 { #category : 'initialization' }
 CanopyAccessor >> initializeFromPragma: aPragma [
-	| args |
-	(aPragma arguments second = #accessor)
-		ifTrue: [ writeSelector := aPragma method selector ]
+	"The direction comes from the arity of the declaring method: one that takes a value can only
+	write, one that answers a value can only read. Declaring the same direction twice for one key
+	is an error rather than a silent overwrite."
+	aPragma method numArgs = 0
+		ifTrue: [
+			readSelector ifNotNil: [
+				^ self error: 'two canopy declarations read ' , aPragma arguments first asString ].
+			readSelector := aPragma method selector ]
 		ifFalse: [
-			args := aPragma arguments third.
-			readSelector := aPragma method selector.
-			name := aPragma arguments first.
-			args ifNotEmpty: [
-				description := args first.
-				valueType := args second ] ]
-]
-
-{ #category : 'accessing' }
-CanopyAccessor >> name [
-	^ name
+			writeSelector ifNotNil: [
+				^ self error: 'two canopy declarations write ' , aPragma arguments first asString ].
+			writeSelector := aPragma method selector ]
 ]
 
 { #category : 'accessing' }
@@ -99,11 +83,6 @@ CanopyAccessor >> valueHolder [
 	answers itself. Only the export path asks for this."
 	readSelector ifNil: [ ^ self error: 'this accessor has no read selector' ].
 	^ (object perform: readSelector) asCanopyValue
-]
-
-{ #category : 'accessing' }
-CanopyAccessor >> valueType [
-	^ valueType
 ]
 
 { #category : 'accessing' }
