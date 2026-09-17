@@ -22,19 +22,15 @@ CanopyAccessorTest >> testAcceptCanopySkipsWriteOnlyAccessorsInsteadOfCrashing [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyAccessorTest >> testDictionaryAccessorBuiltFromPragmaWrapsLiveDictionary [
-	"Fixed 2026-07-21: CanopyDictionaryAccessor had neither object: nor
-	initializeFromPragma: - <canopyValue: ... type: #dictionary ...> would crash with
-	doesNotUnderstand: #object: inside CanopyMappingBuilder. Verified nobody used this
-	pragma type before the fix (dead but real gap)."
-	| built leaf dict |
-	dict := Dictionary new at: #a put: 1; yourself.
-	built := CanopyMappingBuilder new object: (CanopyDictionaryTestObject new settings: dict; yourself); map: CanopyBranchNode new; build.
-	leaf := built / #settings.
-	self assert: leaf class equals: CanopyDictionaryAccessor.
-	self assert: leaf value equals: dict.
-	leaf apply: (CanopyBranchNode new at: #b put: (CanopyCell new value: 2); yourself).
-	self assert: (dict at: #b) equals: 2
+CanopyAccessorTest >> testASubtreeReachesAComponentThroughAnOrdinaryWriteDeclaration [
+	"The sink used to need a node class of its own and a type in the pragma. It is an ordinary
+	one-argument declaration now, and what it receives is a plain nested Dictionary."
+	| object built |
+	object := CanopyDictionaryTestObject new settings: (Dictionary new at: #a put: 1; yourself); yourself.
+	built := CanopyMappingBuilder new object: object; map: CanopyBranchNode new; build.
+	(built / #settings) apply: (CanopyBranchNode new at: #b put: (CanopyCell new value: 2); yourself).
+	self assert: (object settings at: #a) equals: 1.
+	self assert: (object settings at: #b) equals: 2
 ]
 
 { #category : 'as yet unclassified' }

@@ -24,42 +24,32 @@ CanopyMergeTest >> testCellMergeOverwritesWithLastValue [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyMergeTest >> testDictionaryAccessorValueReturnsWrappedDictionary [
-	"Previously missing (see Canopy roadmap): without it, value/inspectionValue
-	silently fell back to Object>>value (returns self) instead of DNU-ing,
-	which is misleading in the debugger/inspector - not a crash, but wrong."
-	| dict target |
-	dict := Dictionary new.
-	target := CanopyDictionaryAccessor on: dict.
-	self assert: target value == dict.
-	self assert: target inspectionValue == dict
-]
-
-{ #category : 'as yet unclassified' }
-CanopyMergeTest >> testDictionaryApplyPushesValuesByKey [
-	| branch dict target |
+CanopyMergeTest >> testApplyingASubtreeToALeafHandsItOverAsOneRawDictionary [
+	"A leaf that is handed a branch takes it as a single value. What arrives at the component is
+	plain - no nodes, no holders - because the dictionary it ends up in belongs to the component."
+	| branch object |
 	branch := CanopyBranchNode new.
 	branch at: #a put: (CanopyCell new value: 1).
 	branch at: #b put: (CanopyCell new value: 2).
-	dict := Dictionary new.
-	target := CanopyDictionaryAccessor on: dict.
-	target apply: branch.
-	self assert: (dict at: #a) equals: 1.
-	self assert: (dict at: #b) equals: 2
+	object := CanopyDictionaryTestObject new settings: Dictionary new; yourself.
+	((CanopyMappingBuilder new object: object; map: CanopyBranchNode new; build) / #settings)
+		apply: branch.
+	self assert: (object settings at: #a) equals: 1.
+	self assert: (object settings at: #b) equals: 2
 ]
 
 { #category : 'as yet unclassified' }
-CanopyMergeTest >> testDictionaryApplyWithTagOnlyAppliesWhenBranchTagMatches [
-	| branch dict target |
+CanopyMergeTest >> testApplyingASubtreeToALeafHonoursTheTag [
+	| branch object leaf |
 	branch := CanopyBranchNode new.
 	branch at: #a put: (CanopyCell new value: 1).
 	branch addTag: #config.
-	dict := Dictionary new.
-	target := CanopyDictionaryAccessor on: dict.
-	target apply: branch withTag: #metrics.
-	self deny: (dict includesKey: #a).
-	target apply: branch withTag: #config.
-	self assert: (dict at: #a) equals: 1
+	object := CanopyDictionaryTestObject new settings: Dictionary new; yourself.
+	leaf := (CanopyMappingBuilder new object: object; map: CanopyBranchNode new; build) / #settings.
+	leaf apply: branch withTag: #metrics.
+	self deny: (object settings includesKey: #a).
+	leaf apply: branch withTag: #config.
+	self assert: (object settings at: #a) equals: 1
 ]
 
 { #category : 'as yet unclassified' }
@@ -107,17 +97,6 @@ CanopyMergeTest >> testMergingBranchIntoCellRaisesConflict [
 	existing at: #foo put: (CanopyCell new value: 42).
 	incoming := Canopy new.
 	incoming at: #foo put: CanopyBranchNode new.
-	self should: [ existing merge: incoming ] raise: Error
-]
-
-{ #category : 'as yet unclassified' }
-CanopyMergeTest >> testMergingBranchIntoDictionaryAccessorRaisesConflict [
-	"Same fix, different leaf subtype - confirms the CanopyLeafNode>>mergeInto:/
-	CanopyBranchNode>>mergeInto: guard covers CanopyDictionaryAccessor too, not just
-	CanopyAccessor."
-	| existing incoming |
-	existing := CanopyDictionaryAccessor new.
-	incoming := CanopyBranchNode new at: #a put: (CanopyCell new value: 1); yourself.
 	self should: [ existing merge: incoming ] raise: Error
 ]
 

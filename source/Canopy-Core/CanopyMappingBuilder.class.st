@@ -60,7 +60,7 @@ CanopyMappingBuilder >> buildLocalProperties [
 	self canopyPragmas do: [ :pragma |
 		(leaves
 			at: pragma arguments first
-			ifAbsentPut: [ (self leafClassFor: pragma) new object: object ])
+			ifAbsentPut: [ CanopyAccessor new object: object ])
 				initializeFromPragma: pragma ].
 	leaves keysAndValuesDo: [ :key :leaf |
 		map at: key put: leaf ]
@@ -73,15 +73,6 @@ CanopyMappingBuilder >> canopyPragmas [
 	in the pinned downstream repos keep working while they are moved over."
 	^ (Pragma allNamed: #canopyValue: from: object class to: Object)
 		, (Pragma allNamed: #canopyValue:type:arguments: from: object class to: Object)
-]
-
-{ #category : 'as yet unclassified' }
-CanopyMappingBuilder >> leafClassFor: aPragma [
-	"Only the old form still names a node kind, and only #dictionary picks a different class -
-	a leaf that swallows a whole subtree instead of a single value."
-	^ aPragma arguments size = 3
-		ifTrue: [ CanopyLeafNode withType: aPragma arguments second ]
-		ifFalse: [ CanopyAccessor ]
 ]
 
 { #category : 'initialization' }

@@ -76,11 +76,6 @@ CanopyPrometheusVisitor >> visitCell: aCanopyCell [
 ]
 
 { #category : 'visiting' }
-CanopyPrometheusVisitor >> visitDictionaryAccessor: aCanopyDictionaryAccessor [
-	"Same reason as visitCell: - a component's own dictionary is configuration, not a metric."
-]
-
-{ #category : 'visiting' }
 CanopyPrometheusVisitor >> visitMetric: aNode [
 	"Ask the value what it contributes and write one line per reading. A value that is not a
 	metric answers nothing, so nothing is written - not even the HELP and TYPE header. That is

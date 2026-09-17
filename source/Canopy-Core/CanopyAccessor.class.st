@@ -10,21 +10,18 @@ Class {
 	#package : 'Canopy-Core'
 }
 
-{ #category : 'accessing' }
-CanopyAccessor class >> handlesType: aString [
-	^ (super handlesType: aString) or: [ aString = #accessor ]
-]
-
-{ #category : 'accessing' }
-CanopyAccessor class >> type [
-	^ #metric
-]
-
 { #category : 'visiting' }
 CanopyAccessor >> acceptCanopy: aVisitor [
 	"Write-only accessors (no readSelector) contribute nothing to export/formatting -
 	they have nothing to read and therefore nothing to export."
 	^ readSelector ifNotNil: [ aVisitor visitMetric: self ]
+]
+
+{ #category : 'converting' }
+CanopyAccessor >> asRawValue [
+	"A leaf that was only declared for writing has nothing to answer. Saying so with nil keeps a
+	single write-only accessor from taking the whole JSON view of a tree down with it."
+	^ readSelector ifNotNil: [ self value ]
 ]
 
 { #category : 'initialization' }
