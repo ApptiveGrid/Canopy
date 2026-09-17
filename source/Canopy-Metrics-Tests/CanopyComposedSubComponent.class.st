@@ -15,7 +15,7 @@ CanopyComposedSubComponent >> value: anInteger [
 
 { #category : 'as yet unclassified' }
 CanopyComposedSubComponent >> valueCanopy [
-	<canopyValue: #value type: #metric arguments: #()>
+	<canopyValue: #value>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'A sub-component value';

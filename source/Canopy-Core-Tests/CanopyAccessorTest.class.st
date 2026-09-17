@@ -38,11 +38,9 @@ CanopyAccessorTest >> testDictionaryAccessorBuiltFromPragmaWrapsLiveDictionary [
 ]
 
 { #category : 'as yet unclassified' }
-CanopyAccessorTest >> testMetricPragmaStillPopulatesReadSelectorAndMetadata [
-	"Regression: the #metric pragma path (used by dozens of existing VM/Image/Zinc
-	methods, but kept package-local here to avoid a Core-Tests -> Metrics-Tests
-	dependency) must still populate readSelector/name/description/valueType exactly as
-	before, now that CanopyMetric itself is gone - CanopyAccessor absorbs its role."
+CanopyAccessorTest >> testAUnaryDeclarationBuildsAReadOnlyLeaf [
+	"A declaration on a method that answers a value can only read: the leaf has a read selector
+	and no write selector, without anything in the pragma saying so."
 	| object built leaf |
 	object := CanopyTestObject new.
 	object one: 42.
@@ -50,9 +48,33 @@ CanopyAccessorTest >> testMetricPragmaStillPopulatesReadSelectorAndMetadata [
 	leaf := built / #one.
 	self assert: leaf class equals: CanopyAccessor.
 	self assert: leaf value equals: 42.
-	self assert: leaf description equals: 'The configured one value'.
-	self assert: leaf valueType equals: #gauge.
-	self should: [ leaf value: 1 ] raise: Error "still read-only, no writeSelector"
+	self should: [ leaf value: 1 ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testTwoDeclarationsForOneKeyBecomeOneReadWriteLeaf [
+	"A getter and a setter declared under the same key are two pragmas and one node. Until the
+	direction came from the arity this could not be declared at all, although the leaf had been
+	able to do both since the accessor and the metric were unified."
+	| object built leaf |
+	object := CanopyRootTestObject new.
+	object one: 42.
+	built := CanopyMappingBuilder new object: object; map: CanopyBranchNode new; build.
+	leaf := built / #one.
+	self assert: leaf value equals: 42.
+	leaf value: 99.
+	self assert: object one equals: 99.
+	self assert: leaf value equals: 99
+]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testTwoDeclarationsInTheSameDirectionFailLoudly [
+	"Two declarations writing the same key used to overwrite each other silently, and which of
+	them survived fell out of the order the pragmas were collected in - the same mistake sat in
+	apptive-account and apptive-base for a year and resolved differently in each."
+	self
+		should: [ CanopyMappingBuilder new object: CanopyDuplicateDeclarationExample new; map: CanopyBranchNode new; build ]
+		raise: Error
 ]
 
 { #category : 'as yet unclassified' }

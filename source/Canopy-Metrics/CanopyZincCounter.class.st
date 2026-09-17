@@ -53,7 +53,7 @@ CanopyZincCounter >> duration [
 
 { #category : 'as yet unclassified' }
 CanopyZincCounter >> durationCanopy [
-	<canopyValue: #duration type: #metric arguments: #()>
+	<canopyValue: #duration>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'Average duration of requests';
@@ -101,7 +101,7 @@ CanopyZincCounter >> requests [
 
 { #category : 'as yet unclassified' }
 CanopyZincCounter >> requestsCanopy [
-	<canopyValue: #httpRequests type: #metric arguments: #()>
+	<canopyValue: #httpRequests>
 	^ CanopyMetric new
 		type: #counter;
 		description: 'Number of requests';
@@ -115,7 +115,7 @@ CanopyZincCounter >> responses [
 
 { #category : 'as yet unclassified' }
 CanopyZincCounter >> responsesCanopy [
-	<canopyValue: #httpResponses type: #metric arguments: #()>
+	<canopyValue: #httpResponses>
 	^ CanopyMetricMap new
 		type: #counter;
 		description: 'Number of responses by status';

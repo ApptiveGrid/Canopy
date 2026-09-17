@@ -7,7 +7,7 @@ File class >> canopyRegister [
 
 { #category : '*Canopy-Metrics' }
 File class >> fileRegistrySizeCanopy [
-	<canopyValue: #fileRegistrySize type: #metric arguments: #()>
+	<canopyValue: #fileRegistrySize>
 	^ CanopyMetric new
 		type: #gauge;
 		description: 'The number of files registered';
