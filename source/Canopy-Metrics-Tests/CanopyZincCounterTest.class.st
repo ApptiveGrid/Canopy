@@ -6,6 +6,34 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+CanopyZincCounterTest >> testAnExcludedPrefixIsNotCounted [
+	"The scrape endpoint is the obvious one to leave out: a counter of HTTP requests that counts
+	the requests reading it measures partly itself."
+	| counter |
+	counter := CanopyZincCounter new.
+	counter addExcludePrefix: '/metrics'.
+	counter handleAnnouncement: (CanopyZincTestAnnouncement new url: '/metrics'; responseCode: 200 duration: 5; yourself).
+	self assert: counter requests equals: 0.
+	counter handleAnnouncement: (CanopyZincTestAnnouncement new url: '/api/grids'; responseCode: 200 duration: 5; yourself).
+	self assert: counter requests equals: 1
+]
+
+{ #category : 'as yet unclassified' }
+CanopyZincCounterTest >> testOnlyRequestsUnderAnIncludedPrefixAreCounted [
+	"What the deployed servers do: narrow the count to '/api'. Without it Canopy counted every
+	request the image ever answered, which is not the number the dashboards have been showing."
+	| counter |
+	counter := CanopyZincCounter new.
+	counter addIncludePrefix: '/api'.
+	counter handleAnnouncement: (CanopyZincTestAnnouncement new url: '/status'; responseCode: 200 duration: 5; yourself).
+	self assert: counter requests equals: 0.
+	self assert: (counter responses at: 200) equals: 0.
+	counter handleAnnouncement: (CanopyZincTestAnnouncement new url: '/api/grids'; responseCode: 200 duration: 5; yourself).
+	self assert: counter requests equals: 1.
+	self assert: (counter responses at: 200) equals: 1
+]
+
+{ #category : 'as yet unclassified' }
 CanopyZincCounterTest >> testAFreshCounterAlreadyCarriesTheUsualStatusCodes [
 	"Parity with what the servers export today: the status series exist from the first scrape at
 	zero instead of appearing with the first response of that kind, and the average duration is a
