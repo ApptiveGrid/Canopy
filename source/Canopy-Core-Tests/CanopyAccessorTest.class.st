@@ -8,7 +8,7 @@ Class {
 { #category : 'as yet unclassified' }
 CanopyAccessorTest >> testAcceptCanopySkipsWriteOnlyAccessorsInsteadOfCrashing [
 	"Found 2026-07-21 while sanity-checking format: over the real Canopy systemMetrics
-	tree: VirtualMachine>>maximumExternalSemaphoresCanopy: is a #accessor (write-only)
+	tree: VirtualMachine>>maxExternalSemaphoresCanopy: is a write-only declaration
 	pragma sitting in the same tree as real #metric values under #virtualMachine. Before
 	this fix, acceptCanopy: unconditionally dispatched to visitMetric:, which crashed on
 	nil name/description for any write-only accessor. Write-only accessors must not break
