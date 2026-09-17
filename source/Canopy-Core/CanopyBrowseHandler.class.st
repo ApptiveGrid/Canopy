@@ -46,7 +46,7 @@ CanopyBrowseHandler >> handleRequest: request [
 
 { #category : 'private' }
 CanopyBrowseHandler >> jsonResponse: node [
-	^ ZnResponse ok: (ZnEntity with: (CanopyJsonVisitor new format: node) type: ZnMimeType applicationJson)
+	^ ZnResponse ok: (ZnEntity with: (STON toJsonString: node asRawValue) type: ZnMimeType applicationJson)
 ]
 
 { #category : 'private' }
