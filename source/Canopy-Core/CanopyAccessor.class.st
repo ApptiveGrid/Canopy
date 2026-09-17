@@ -10,6 +10,17 @@ Class {
 	#package : 'Canopy-Core'
 }
 
+{ #category : 'instance creation' }
+CanopyAccessor class >> reading: aBlock [
+	"A leaf whose value is worked out on the spot instead of being read off a component: the
+	block is the object and evaluating it is the read. That is how a value nobody declared with
+	a pragma gets into the tree - every runtime metric of the servers is built that way."
+	^ self new
+		object: aBlock;
+		readSelector: #value;
+		yourself
+]
+
 { #category : 'visiting' }
 CanopyAccessor >> acceptCanopy: aVisitor [
 	"Write-only accessors (no readSelector) contribute nothing to export/formatting -
