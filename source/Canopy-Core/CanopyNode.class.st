@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'parent',
 		'tags',
-		'properties'
+		'labels'
 	],
 	#category : 'Canopy-Core',
 	#package : 'Canopy-Core'
@@ -37,7 +37,7 @@ CanopyNode >> fullKey [
 CanopyNode >> initialize [
 	super initialize.
 	tags := Set new.
-	properties := Dictionary new 
+	labels := Dictionary new
 ]
 
 { #category : 'accessing' }
@@ -55,6 +55,22 @@ CanopyNode >> key [
 	^ parent 
 		ifNotNil: [ parent keyOf: self ]
 		ifNil: [ '/' ]
+]
+
+{ #category : 'accessing' }
+CanopyNode >> labelAt: aKey put: anObject [
+	"Set a label on this node alone; every node below it sees it too, see labels."
+	labels at: aKey put: anObject
+]
+
+{ #category : 'accessing' }
+CanopyNode >> labels [
+	"The labels of this node and of every node above it - the same walk up the parent chain
+	that allKeys does for the name. A label set closer to the value wins over an inherited one,
+	so a single stage label at the root reaches every line without being repeated anywhere."
+	^ parent
+		ifNotNil: [ parent labels , labels ]
+		ifNil: [ labels ]
 ]
 
 { #category : 'actions' }
@@ -79,11 +95,6 @@ CanopyNode >> printPathOn: aStream [
 	parent printPathOn: aStream.
 	aStream << '/'.
 	aStream << (parent keyOf: self)
-]
-
-{ #category : 'accessing' }
-CanopyNode >> properties [ 
-	^ properties 
 ]
 
 { #category : 'accessing' }

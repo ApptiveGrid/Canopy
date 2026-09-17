@@ -17,7 +17,7 @@ CanopyMetricMap >> acceptCanopy: aVisitor [
 
 { #category : 'accessing' }
 CanopyMetricMap >> attributes [
-	^ self properties
+	^ self labels
 ]
 
 { #category : 'accessing' }
