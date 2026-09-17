@@ -83,7 +83,19 @@ CanopyZincCounter >> increaseStatusCode: statusCode [
 CanopyZincCounter >> initialize [
 	super initialize.
 	requests := 0.
-	responses := Dictionary new
+	duration := 0.
+	responses := Dictionary new.
+	self initializeResponses
+]
+
+{ #category : 'initialization' }
+CanopyZincCounter >> initializeResponses [
+	"Seed the status codes the servers actually answer, so their series exist from the first
+	scrape instead of appearing out of nowhere with the first response of that kind. Same list
+	as pharo-metrics seeds today - a counter that starts at zero reads differently from one that
+	starts existing halfway through the day."
+	#( 200 201 202 204 301 302 400 401 403 404 405 500 502 503 504 ) do: [ :code |
+		responses at: code put: 0 ]
 ]
 
 { #category : 'installing' }

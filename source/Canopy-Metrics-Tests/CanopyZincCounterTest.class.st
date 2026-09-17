@@ -6,14 +6,30 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-CanopyZincCounterTest >> testHandleAnnouncementAdjustsDurationWithExponentialMovingAverage [
-	"Mirrors ZincCounter (pharo-metrics, out of scope otherwise): first duration sets the
-	baseline, subsequent durations are folded in with 99% weight on the running average."
+CanopyZincCounterTest >> testAFreshCounterAlreadyCarriesTheUsualStatusCodes [
+	"Parity with what the servers export today: the status series exist from the first scrape at
+	zero instead of appearing with the first response of that kind, and the average duration is a
+	number rather than nil - which is not even valid exposition."
+	| counter |
+	counter := CanopyZincCounter new.
+	self assert: counter duration equals: 0.
+	self assert: (counter responses at: 200) equals: 0.
+	self assert: (counter responses at: 500) equals: 0.
+	self assert: counter responses size equals: 15
+]
+
+{ #category : 'as yet unclassified' }
+CanopyZincCounterTest >> testHandleAnnouncementFoldsDurationsIntoARunningAverage [
+	"Mirrors ZincCounter (pharo-metrics): the average starts at zero and every duration is folded
+	in with 99% weight on the running value. The first request therefore does not set a baseline -
+	it moves the average by a hundredth, which is what the servers have been exporting all along.
+	Canopy did set the baseline from the first request, because its average started as nil; the
+	nil guard in adjustDuration: is unreachable now."
 	[ CanopyZincCounter reset.
-	CanopyZincCounter instance handleAnnouncement: (CanopyZincTestAnnouncement new responseCode: 200 duration: 10; yourself).
+	CanopyZincCounter instance handleAnnouncement: (CanopyZincTestAnnouncement new responseCode: 200 duration: 1000; yourself).
 	self assert: CanopyZincCounter instance duration equals: 10.
-	CanopyZincCounter instance handleAnnouncement: (CanopyZincTestAnnouncement new responseCode: 200 duration: 20; yourself).
-	self assert: CanopyZincCounter instance duration equals: (((99 * 10) + 20) / 100) asInteger ]
+	CanopyZincCounter instance handleAnnouncement: (CanopyZincTestAnnouncement new responseCode: 200 duration: 1000; yourself).
+	self assert: CanopyZincCounter instance duration equals: (((99 * 10) + 1000) / 100) asInteger ]
 		ensure: [ CanopyZincCounter reset ]
 ]
 
