@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'value'
 	],
-	#category : 'Canopy-Core-Tests',
-	#package : 'Canopy-Core-Tests'
+	#category : 'Canopy-Metrics-Tests',
+	#package : 'Canopy-Metrics-Tests'
 }
 
 { #category : 'accessing' }
@@ -15,6 +15,9 @@ CanopyComposedSubComponent >> value: anInteger [
 
 { #category : 'as yet unclassified' }
 CanopyComposedSubComponent >> valueCanopy [
-	<canopyValue: #value type: #metric arguments: #('A sub-component value' gauge)>
-	^ value
+	<canopyValue: #value type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #gauge;
+		description: 'A sub-component value';
+		value: value
 ]
