@@ -30,6 +30,13 @@ CanopyValueHolder >> printOn: aStream [
 	aStream << ']'
 ]
 
+{ #category : 'enumerating' }
+CanopyValueHolder >> readingsDo: aBlock [
+	"Enumerate what this value contributes to an export, as labels and a number. A plain value
+	contributes nothing, so this does nothing - and that is the whole export filter: the exporter
+	asks every holder and writes what it gets back, without testing a single class."
+]
+
 { #category : 'evaluating' }
 CanopyValueHolder >> value [
 	^ value
