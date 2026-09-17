@@ -109,7 +109,7 @@ CanopyPrometheusVisitor >> writeMetric: aMetric [
 	self 
 		writeName: (self convertMetricName: aMetric) 
 		value: aMetric value
-		attributes: aMetric properties
+		attributes: aMetric labels
 
 ]
 

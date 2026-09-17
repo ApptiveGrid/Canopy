@@ -97,6 +97,21 @@ CanopyMetricsVisitorTest >> memoryMetric [
 	^ (CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build) / #memorySize
 ]
 
+{ #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testLabelSetAtTheRootAppearsOnEveryMetricLine [
+	"The stage label of the deployed servers hangs at the root and has to reach every line -
+	pharo-metrics does it with attributes ^ parent attributes , attributes. Before labels walked
+	the parent chain, a label set at the root simply never showed up in the output."
+	| root vm output |
+	root := CanopyBranchNode new.
+	vm := CanopyBranchNode new.
+	root at: #virtualMachine put: vm.
+	vm at: #memorySize put: self memoryMetric.
+	root labelAt: #stage put: 'production'.
+	output := CanopyPrometheusVisitor new format: root.
+	self assert: (output includesSubstring: 'virtualMachine_memorySize{stage="production"}')
+]
+
 { #category : 'export selection' }
 CanopyMetricsVisitorTest >> testExportMixesPharoPrefixedSystemDomainsAndBareApptiveGrid [
 	"The three-domain leitszenario (Canopy roadmap, Option B): image and virtualMachine carry a
