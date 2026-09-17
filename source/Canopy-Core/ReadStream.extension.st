@@ -1,6 +1,6 @@
 Extension { #name : 'ReadStream' }
 
 { #category : '*Canopy-Core' }
-ReadStream >> asCanopyCell [
-	^ (STON fromStream: self) asCanopyCell
+ReadStream >> asCanopyNode [
+	^ (STON fromStream: self) asCanopyNode
 ]

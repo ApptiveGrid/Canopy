@@ -1,7 +1,9 @@
 Extension { #name : 'Object' }
 
 { #category : '*Canopy-Core' }
-Object >> asCanopyCell [
+Object >> asCanopyNode [
+	"Answer this object as a node of a Canopy tree. A plain value becomes a leaf;
+	Dictionary overrides this to build a whole branch, one node per key."
 	^ CanopyCell new value: self
 ]
 
