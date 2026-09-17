@@ -56,7 +56,7 @@ CanopyBrowseHtmlHandler >> branchPageFor: node path: pathString [
 						nextPutAll: (self htmlEscape: key asString); nextPutAll: '</a></td><td></td>' ]
 				ifFalse: [
 					s nextPutAll: '<td>'; nextPutAll: (self htmlEscape: key asString); nextPutAll: '</td>'.
-					s nextPutAll: '<td><input value="'; nextPutAll: (self htmlEscape: (CanopyJsonVisitor new format: child));
+					s nextPutAll: '<td><input value="'; nextPutAll: (self htmlEscape: (STON toJsonString: child asRawValue));
 						nextPutAll: '"><button data-href="'; nextPutAll: (self htmlEscape: href); nextPutAll: '">Save</button></td>' ].
 			s nextPutAll: '</tr>' ].
 		s nextPutAll: '</table>'.
@@ -93,7 +93,7 @@ CanopyBrowseHtmlHandler >> htmlEscape: aString [
 { #category : 'private' }
 CanopyBrowseHtmlHandler >> pageFor: node path: pathString [
 	| currentJson |
-	currentJson := CanopyJsonVisitor new format: node.
+	currentJson := STON toJsonString: node asRawValue.
 	^ String streamContents: [ :s |
 		s nextPutAll: '<!DOCTYPE html><html><body>'.
 		s nextPutAll: '<h1>/'; nextPutAll: (self htmlEscape: pathString); nextPutAll: '</h1>'.
