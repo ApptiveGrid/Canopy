@@ -7,12 +7,18 @@ ExternalSemaphoreTable class >> canopyRegister [
 
 { #category : '*Canopy-Metrics' }
 ExternalSemaphoreTable class >> externalObjectTableSizeCanopy [
-	<canopyValue: #externalObjectTableSize type: #metric arguments: #('The total size of the external object table, including free slots' gauge)>
-	^ self externalObjects size
+	<canopyValue: #externalObjectTableSize type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #gauge;
+		description: 'The total size of the external object table, including free slots';
+		value: self externalObjects size
 ]
 
 { #category : '*Canopy-Metrics' }
 ExternalSemaphoreTable class >> externalObjectsCanopy [
-	<canopyValue: #externalObjects type: #metric arguments: #('The number of currently registered (non-nil) external objects' gauge)>
-	^ (self externalObjects reject: #isNil) size
+	<canopyValue: #externalObjects type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #gauge;
+		description: 'The number of currently registered (non-nil) external objects';
+		value: (self externalObjects reject: #isNil) size
 ]

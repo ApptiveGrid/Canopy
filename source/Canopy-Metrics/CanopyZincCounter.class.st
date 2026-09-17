@@ -53,8 +53,11 @@ CanopyZincCounter >> duration [
 
 { #category : 'as yet unclassified' }
 CanopyZincCounter >> durationCanopy [
-	<canopyValue: #duration type: #metric arguments: #('Average duration of requests' gauge)>
-	^ self duration
+	<canopyValue: #duration type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #gauge;
+		description: 'Average duration of requests';
+		value: self duration
 ]
 
 { #category : 'counting' }
@@ -98,8 +101,11 @@ CanopyZincCounter >> requests [
 
 { #category : 'as yet unclassified' }
 CanopyZincCounter >> requestsCanopy [
-	<canopyValue: #httpRequests type: #metric arguments: #('Number of requests' counter)>
-	^ self requests
+	<canopyValue: #httpRequests type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #counter;
+		description: 'Number of requests';
+		value: self requests
 ]
 
 { #category : 'accessing' }
@@ -109,8 +115,12 @@ CanopyZincCounter >> responses [
 
 { #category : 'as yet unclassified' }
 CanopyZincCounter >> responsesCanopy [
-	<canopyValue: #httpResponses type: #metricMap arguments: #('Number of responses by status' counter)>
-	^ self responses
+	<canopyValue: #httpResponses type: #metric arguments: #()>
+	^ CanopyMetricMap new
+		type: #counter;
+		description: 'Number of responses by status';
+		labelName: #status;
+		value: self responses
 ]
 
 { #category : 'installing' }

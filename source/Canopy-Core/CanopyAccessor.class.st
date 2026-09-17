@@ -49,8 +49,9 @@ CanopyAccessor >> initializeFromPragma: aPragma [
 			args := aPragma arguments third.
 			readSelector := aPragma method selector.
 			name := aPragma arguments first.
-			description := args first.
-			valueType := args second ]
+			args ifNotEmpty: [
+				description := args first.
+				valueType := args second ] ]
 ]
 
 { #category : 'accessing' }

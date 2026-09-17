@@ -5,8 +5,8 @@ Class {
 		'memoryLimit',
 		'usedMemory'
 	],
-	#category : 'Canopy-Core-Tests',
-	#package : 'Canopy-Core-Tests'
+	#category : 'Canopy-Metrics-Tests',
+	#package : 'Canopy-Metrics-Tests'
 }
 
 { #category : 'accessing' }
@@ -22,8 +22,11 @@ CanopyMemoryLimitExampleObject >> memoryLimit: anInteger [
 
 { #category : 'as yet unclassified' }
 CanopyMemoryLimitExampleObject >> usagePercentageCanopy [
-	<canopyValue: #usagePercentage type: #metric arguments: #('Percentage of the configured memory limit currently in use' gauge)>
-	^ (usedMemory / memoryLimit) * 100
+	<canopyValue: #usagePercentage type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #gauge;
+		description: 'Percentage of the configured memory limit currently in use';
+		value: (usedMemory / memoryLimit) * 100
 ]
 
 { #category : 'accessing' }
@@ -33,6 +36,9 @@ CanopyMemoryLimitExampleObject >> usedMemory: anInteger [
 
 { #category : 'as yet unclassified' }
 CanopyMemoryLimitExampleObject >> usedMemoryCanopy [
-	<canopyValue: #usedMemory type: #metric arguments: #('Currently used memory' gauge)>
-	^ usedMemory
+	<canopyValue: #usedMemory type: #metric arguments: #()>
+	^ CanopyMetric new
+		type: #gauge;
+		description: 'Currently used memory';
+		value: usedMemory
 ]

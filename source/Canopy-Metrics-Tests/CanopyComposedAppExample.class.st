@@ -5,8 +5,8 @@ Class {
 		'componentA',
 		'componentB'
 	],
-	#category : 'Canopy-Core-Tests',
-	#package : 'Canopy-Core-Tests'
+	#category : 'Canopy-Metrics-Tests',
+	#package : 'Canopy-Metrics-Tests'
 }
 
 { #category : 'as yet unclassified' }

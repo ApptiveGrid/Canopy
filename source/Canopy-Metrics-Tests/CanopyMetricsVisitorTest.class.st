@@ -9,9 +9,9 @@ Class {
 CanopyMetricsVisitorTest >> testConvertMetricNameUsesFullTreePathAcrossPlainBranches [
 	"The group_name Prometheus convention (Canopy roadmap, Metriken aus pharo-metrics
 	uebernehmen) must work even when an ancestor is a plain CanopyBranchNode, not a
-	CanopyMetricGroup - #virtualMachine/#image (Canopy class>>systemMetrics) are plain
-	branches, not metric groups. fullKey walks the real parent chain, independent of the
-	visitor - no longer relies on the now-removed CanopyPrometheusVisitor>>prefixes."
+	a plain CanopyBranchNode - #virtualMachine/#image (Canopy class>>registerSystemMetrics)
+	are ordinary branches. fullKey walks the real parent chain, independent of the visitor -
+	no longer relies on the now-removed CanopyPrometheusVisitor>>prefixes."
 	| mapBranch metric root vmBranch output |
 	mapBranch := CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build.
 	metric := mapBranch / #memorySize.
@@ -34,25 +34,24 @@ CanopyMetricsVisitorTest >> testExternalObjectMetricsHaveDistinctDescriptions [
 	| metrics tableSize objects |
 	[ ExternalSemaphoreTable canopyRegister.
 	metrics := Canopy instance.
-	tableSize := metrics / #image / #externalObjectTableSize.
-	objects := metrics / #image / #externalObjects.
+	tableSize := (metrics / #image / #externalObjectTableSize) valueHolder.
+	objects := (metrics / #image / #externalObjects) valueHolder.
 	self deny: tableSize description equals: objects description ]
 		ensure: [ Canopy reset ]
 ]
 
 { #category : 'as yet unclassified' }
-CanopyMetricsVisitorTest >> testFormatMetricMapNestedInMetricGroupProducesPerLabelPrometheusLines [
-	"Regression test for the previously dead CanopyPrometheusVisitor>>visitMetricGroup:/
-	visitMetricMap: - CanopyMetricGroup/CanopyMetricMap did not exist before (see Canopy
-	roadmap, Metriken aus pharo-metrics uebernehmen). Metric name is now the full underscore-
-	joined tree path (fullKey), not the bare key - see testConvertMetricNameUsesFullTreePath."
-	| mapBranch metricMap root group output |
+CanopyMetricsVisitorTest >> testAMapMetricProducesOneLinePerKeyUnderItsDeclaredLabel [
+	"A map answers one reading per key, labelled with the name its own declaration carries -
+	the visitor no longer knows anything about #status. The metric name stays the full
+	underscore-joined tree path, see testConvertMetricNameUsesFullTreePath."
+	| mapBranch metricMap root zinc output |
 	mapBranch := CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build.
 	metricMap := mapBranch / #responsesByStatus.
 	root := CanopyBranchNode new.
-	group := CanopyMetricGroup new.
-	root at: #zinc put: group.
-	group at: #responsesByStatus put: metricMap.
+	zinc := CanopyBranchNode new.
+	root at: #zinc put: zinc.
+	zinc at: #responsesByStatus put: metricMap.
 	output := CanopyPrometheusVisitor new format: root.
 	self assert: (output includesSubstring: '# HELP zinc_responsesByStatus Responses by status').
 	self assert: (output includesSubstring: '# TYPE zinc_responsesByStatus gauge').
@@ -61,32 +60,12 @@ CanopyMetricsVisitorTest >> testFormatMetricMapNestedInMetricGroupProducesPerLab
 ]
 
 { #category : 'as yet unclassified' }
-CanopyMetricsVisitorTest >> testMetricGroupMetricsReturnsChildNodes [
-	| group a b |
-	group := CanopyMetricGroup new.
-	a := CanopyCell new value: 1.
-	b := CanopyCell new value: 2.
-	group at: #a put: a.
-	group at: #b put: b.
-	self assertCollection: group metrics asArray hasSameElements: (Array with: a with: b)
-]
-
-{ #category : 'as yet unclassified' }
-CanopyMetricsVisitorTest >> testMetricGroupNameReflectsPositionInTree [
-	| root group |
-	root := CanopyBranchNode new.
-	group := CanopyMetricGroup new.
-	root at: #zinc put: group.
-	self assert: group name equals: #zinc
-]
-
-{ #category : 'as yet unclassified' }
-CanopyMetricsVisitorTest >> testMetricMapAttributesAndValuesDoIteratesValueDictionary [
-	| mapBranch metricMap seen |
+CanopyMetricsVisitorTest >> testMapMetricReadingsCarryTheKeyAsALabel [
+	| mapBranch seen |
 	mapBranch := CanopyMappingBuilder new object: CanopyMetricsTestObject new; map: CanopyBranchNode new; build.
-	metricMap := mapBranch / #responsesByStatus.
 	seen := Dictionary new.
-	metricMap attributesAndValuesDo: [ :status :count | seen at: status put: count ].
+	(mapBranch / #responsesByStatus) valueHolder readingsDo: [ :labels :count |
+		seen at: (labels at: #status) put: count ].
 	self assert: (seen at: 200) equals: 5.
 	self assert: (seen at: 404) equals: 2
 ]

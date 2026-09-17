@@ -70,47 +70,43 @@ CanopyPrometheusVisitor >> visitBranchNode: aCanopyBranchNode [
 ]
 
 { #category : 'visiting' }
-CanopyPrometheusVisitor >> visitMetric: aMetricGroup [ 
-	self writeHelpLine: aMetricGroup.
-	self writeTypeLine: aMetricGroup.
-	self writeMetric: aMetricGroup 
+CanopyPrometheusVisitor >> visitCell: aCanopyCell [
+	"Config values share the tree with metrics but have nothing to export. Before this, a single
+	config cell in an exported domain ended the whole scrape in a doesNotUnderstand."
 ]
 
 { #category : 'visiting' }
-CanopyPrometheusVisitor >> visitMetricGroup: aMetricGroup [ 
-	^ self visitAll: aMetricGroup metrics
+CanopyPrometheusVisitor >> visitDictionaryAccessor: aCanopyDictionaryAccessor [
+	"Same reason as visitCell: - a component's own dictionary is configuration, not a metric."
 ]
 
 { #category : 'visiting' }
-CanopyPrometheusVisitor >> visitMetricMap: aMetricMap [
-	self writeHelpLine: aMetricMap.
-	self writeTypeLine: aMetricMap.
-	aMetricMap attributesAndValuesDo: [ :attribute :value |
-		self 
-			writeName: (self convertMetricName: aMetricMap)
-			value: value 
-			attributes: aMetricMap attributes, ({ #status -> attribute } asDictionary)  ]
+CanopyPrometheusVisitor >> visitMetric: aNode [
+	"Ask the value what it contributes and write one line per reading. A value that is not a
+	metric answers nothing, so nothing is written - not even the HELP and TYPE header. That is
+	why a config value in an exported tree now costs no output instead of ending the scrape."
+	| holder header |
+	holder := aNode valueHolder.
+	header := false.
+	holder readingsDo: [ :labels :value |
+		header ifFalse: [
+			self writeHelpLine: aNode holder: holder.
+			self writeTypeLine: aNode holder: holder.
+			header := true ].
+		self
+			writeName: (self convertMetricName: aNode)
+			value: value
+			attributes: aNode labels , labels ]
 ]
 
 { #category : 'writing' }
-CanopyPrometheusVisitor >> writeHelpLine: aMetric [
-	stream 
+CanopyPrometheusVisitor >> writeHelpLine: aNode holder: aMetric [
+	stream
 		nextPutAll: '# HELP ';
-		nextPutAll: (self convertMetricName: aMetric);
+		nextPutAll: (self convertMetricName: aNode);
 		nextPutAll: ' '.
-	stream nextPutAll: (aMetric hasDescription 
-		ifTrue: [ aMetric description ]
-		ifFalse: [ aMetric name ]).
+	stream nextPutAll: (aMetric description ifNil: [ aNode key asString ]).
 	stream nextPut: Character linefeed
-]
-
-{ #category : 'visiting' }
-CanopyPrometheusVisitor >> writeMetric: aMetric [ 
-	self 
-		writeName: (self convertMetricName: aMetric) 
-		value: aMetric value
-		attributes: aMetric labels
-
 ]
 
 { #category : 'visiting' }
@@ -135,11 +131,11 @@ CanopyPrometheusVisitor >> writeName: aName value: aValue attributes: aDictionar
 ]
 
 { #category : 'writing' }
-CanopyPrometheusVisitor >> writeTypeLine: aMetric [ 
-	stream 
+CanopyPrometheusVisitor >> writeTypeLine: aNode holder: aMetric [
+	stream
 		nextPutAll: '# TYPE ';
-		nextPutAll: (self convertMetricName: aMetric);
+		nextPutAll: (self convertMetricName: aNode);
 		nextPutAll: ' ';
-		nextPutAll: aMetric valueType;
+		nextPutAll: aMetric type;
 		nextPut: Character linefeed
 ]
