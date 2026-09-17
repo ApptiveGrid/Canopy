@@ -43,8 +43,7 @@ Canopy class >> registerDomainNamed: aSymbol with: aNode [
 Canopy class >> registerImageMetrics [
 	SmalltalkImage canopyRegister.
 	Process canopyRegister.
-	File canopyRegister.
-	ExternalSemaphoreTable canopyRegister
+	File canopyRegister
 ]
 
 { #category : 'domains' }
@@ -57,7 +56,8 @@ Canopy class >> registerSystemMetrics [
 
 { #category : 'domains' }
 Canopy class >> registerVirtualMachineMetrics [
-	^ VirtualMachine canopyRegister
+	VirtualMachine canopyRegister.
+	^ ExternalSemaphoreTable canopyRegister
 ]
 
 { #category : 'domains' }
