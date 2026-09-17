@@ -83,6 +83,34 @@ CanopyAccessorTest >> testValueRaisesControlledErrorWhenNoReadSelector [
 ]
 
 { #category : 'as yet unclassified' }
+CanopyAccessorTest >> testValueStaysRawWhileValueHolderAnswersTheHolder [
+	"The holder is invisible to every reader but the export path: value unwraps it, valueHolder
+	does not. That is what keeps apply:, the JSON visitor and the browse handler untouched."
+	| accessor |
+	accessor := CanopyAccessor new
+		object: (CanopyTestObject new one: 42; yourself);
+		readSelector: #one;
+		yourself.
+	self assert: accessor value equals: 42.
+	self assert: accessor valueHolder class equals: CanopyValue.
+	self assert: accessor valueHolder value equals: 42
+]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testValueUnwrapsAHolderOnTheWayIn [
+	"Written values are unwrapped in exactly one place, here - so the component's own write
+	method keeps receiving a raw value and never has to know that holders exist."
+	| object accessor |
+	object := CanopyTestObject new.
+	accessor := CanopyAccessor new
+		object: object;
+		writeSelector: #one;
+		yourself.
+	accessor value: 99 asCanopyValue.
+	self assert: object one equals: 99
+]
+
+{ #category : 'as yet unclassified' }
 CanopyAccessorTest >> testValueWriteRaisesControlledErrorWhenNoWriteSelector [
 	"Mirrors the old CanopyMetric>>value: ('a metric cannot be written') - a read-only
 	accessor now raises the same kind of controlled error for the opposite direction."

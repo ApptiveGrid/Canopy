@@ -8,6 +8,13 @@ Object >> asCanopyNode [
 ]
 
 { #category : '*Canopy-Core' }
+Object >> asCanopyValue [
+	"Answer this object as a Canopy value: wrapped in a holder that carries nothing but the
+	value itself. A holder answers itself, so wrapping is idempotent."
+	^ CanopyValue value: self
+]
+
+{ #category : '*Canopy-Core' }
 Object >> canopyBind: aPTGroup keys: aCollection [ 
 	aCollection do: [ :accessor |
 		(aPTGroup at: accessor) register: (CanopyAccessor new 
