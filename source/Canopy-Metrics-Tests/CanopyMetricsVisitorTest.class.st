@@ -34,9 +34,21 @@ CanopyMetricsVisitorTest >> testExternalObjectMetricsHaveDistinctDescriptions [
 	| metrics tableSize objects |
 	[ ExternalSemaphoreTable canopyRegister.
 	metrics := Canopy instance.
-	tableSize := (metrics / #image / #externalObjectTableSize) valueHolder.
-	objects := (metrics / #image / #externalObjects) valueHolder.
+	tableSize := (metrics / #virtualMachine / #externalObjectTableSize) valueHolder.
+	objects := (metrics / #virtualMachine / #externalObjects) valueHolder.
 	self deny: tableSize description equals: objects description ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testExternalObjectMetricsLiveUnderTheVirtualMachine [
+	"Parity with what the servers export today: pharo-metrics declares both under #virtualMachine
+	(ExternalSemaphoreTable's pragmas say so), and external semaphores are a VM concept. Canopy
+	registered them under #image, which renamed two series without saying a word."
+	[ ExternalSemaphoreTable canopyRegister.
+	self assert: (Canopy instance / #virtualMachine / #externalObjects) notNil.
+	self assert: (Canopy instance / #virtualMachine / #externalObjectTableSize) notNil.
+	self should: [ Canopy instance / #image ] raise: NotFound ]
 		ensure: [ Canopy reset ]
 ]
 

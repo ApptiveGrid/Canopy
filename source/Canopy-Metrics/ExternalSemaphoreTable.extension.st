@@ -2,7 +2,9 @@ Extension { #name : 'ExternalSemaphoreTable' }
 
 { #category : '*Canopy-Metrics' }
 ExternalSemaphoreTable class >> canopyRegister [
-	^ (Canopy /+ #image) merge: (CanopyMappingBuilder new object: self; map: CanopyBranchNode new; build)
+	"External semaphores are a virtual machine concept, and pharo-metrics exports them under
+	#virtualMachine. Registering them under #image renamed two series without saying so."
+	^ (Canopy /+ #virtualMachine) merge: (CanopyMappingBuilder new object: self; map: CanopyBranchNode new; build)
 ]
 
 { #category : '*Canopy-Metrics' }
