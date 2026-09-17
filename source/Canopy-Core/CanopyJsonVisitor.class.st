@@ -7,34 +7,7 @@ Class {
 
 { #category : 'formatting' }
 CanopyJsonVisitor >> format: aNode [
-	^ STON toJsonString: (self visit: aNode)
-]
-
-{ #category : 'visiting' }
-CanopyJsonVisitor >> visit: anObject [
-	^ anObject acceptCanopy: self
-]
-
-{ #category : 'visiting' }
-CanopyJsonVisitor >> visitBranchNode: aCanopyBranchNode [
-	| result |
-	result := Dictionary new.
-	aCanopyBranchNode nodes keysAndValuesDo: [ :key :childNode |
-		result at: key put: (self visit: childNode) ].
-	^ result
-]
-
-{ #category : 'visiting' }
-CanopyJsonVisitor >> visitCell: aCanopyCell [
-	^ aCanopyCell value
-]
-
-{ #category : 'visiting' }
-CanopyJsonVisitor >> visitDictionaryAccessor: aCanopyDictionaryAccessor [
-	^ aCanopyDictionaryAccessor value
-]
-
-{ #category : 'visiting' }
-CanopyJsonVisitor >> visitMetric: aCanopyAccessor [
-	^ aCanopyAccessor value
+	"The traversal this used to do itself is asRawValue now, so a tree is turned into plain
+	values in exactly one place - the same one that hands a subtree to a leaf."
+	^ STON toJsonString: aNode asRawValue
 ]

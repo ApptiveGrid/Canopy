@@ -24,10 +24,11 @@ CanopyBrowseHandler >> handlePut: request [
 		on: NotFound
 		do: [ :e | ^ self notFoundResponse: request ].
 	payload := self parsePayload: request.
+	"An object may land on a leaf as well as on a branch: the leaf takes it as a single value,
+	the same way a configuration file hands a subtree to a component's write method. Only a
+	scalar on a branch has nowhere to go."
 	(payload isKindOf: CanopyBranchNode)
-		ifTrue: [
-			(node isKindOf: CanopyBranchNode) ifFalse: [ ^ ZnResponse badRequest: request ].
-			node apply: payload ]
+		ifTrue: [ node apply: payload ]
 		ifFalse: [
 			(node isKindOf: CanopyBranchNode) ifTrue: [ ^ ZnResponse badRequest: request ].
 			node value: payload value ].

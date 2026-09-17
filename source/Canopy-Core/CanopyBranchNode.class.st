@@ -28,6 +28,17 @@ CanopyBranchNode >> @ aSymbol [
 	^ (self at: aSymbol) value  
 ]
 
+{ #category : 'converting' }
+CanopyBranchNode >> asRawValue [
+	"The inverse of asCanopyNode: a branch answers a plain nested Dictionary of raw values. What
+	comes out belongs to whoever asked for it, so there is nothing of Canopy left in it."
+	| result |
+	result := Dictionary new.
+	nodes keysAndValuesDo: [ :key :node |
+		result at: key put: node asRawValue ].
+	^ result
+]
+
 { #category : 'visiting' }
 CanopyBranchNode >> acceptCanopy: aVisitor [
 	^ aVisitor visitBranchNode: self

@@ -41,9 +41,14 @@ CanopyBrowseHandlerTest >> testHandlePutOnBranchWithScalarPayloadReturnsBadReque
 ]
 
 { #category : 'tests' }
-CanopyBrowseHandlerTest >> testHandlePutOnLeafWithObjectPayloadReturnsBadRequest [
+CanopyBrowseHandlerTest >> testHandlePutOnLeafWithObjectPayloadAppliesItAsOneValue [
+	"A leaf takes a whole object as a single value now. Before, a configuration file was allowed
+	to hand a subtree to a leaf while the HTTP path answered 400 for the very same thing."
+	| response |
 	[ self registerBrowseTestDomain.
-	self assert: (CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/browseTest/a' body: '{"x":1}')) code equals: 400
+	response := CanopyBrowseHandler new handleRequest: (self putRequestFor: 'http://localhost/browseTest/a' body: '{"x":1}').
+	self assert: response isSuccess.
+	self assert: response entity contents equals: '{"x":1}'
 	] ensure: [ Canopy reset ]
 ]
 

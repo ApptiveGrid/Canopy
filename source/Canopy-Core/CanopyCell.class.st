@@ -9,11 +9,6 @@ Class {
 	#package : 'Canopy-Core'
 }
 
-{ #category : 'accessing' }
-CanopyCell class >> type [
-	^ #value
-]
-
 { #category : 'visiting' }
 CanopyCell >> acceptCanopy: aVisitor [
 	^ aVisitor visitCell: self

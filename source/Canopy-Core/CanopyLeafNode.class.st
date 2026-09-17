@@ -5,22 +5,27 @@ Class {
 	#package : 'Canopy-Core'
 }
 
-{ #category : 'accessing' }
-CanopyLeafNode class >> handlesType: aString [
-	^ self type = aString
-]
-
-{ #category : 'accessing' }
-CanopyLeafNode class >> withType: aString [
-	self allSubclassesDo: [ :cls |
-		(cls handlesType: aString) ifTrue: [ 
-			^ cls ] ].
-	self error: 'could not find leaf node type ', aString asString
-]
-
 { #category : 'arithmetic' }
 CanopyLeafNode >> / aString [ 
 	Error signal: 'a value can not be traversed'
+]
+
+{ #category : 'target resize' }
+CanopyLeafNode >> apply: aCanopyBranchNode [
+	"A leaf handed a whole subtree takes it as a single value: the component's own write method
+	receives a plain nested Dictionary and decides itself whether to replace or to merge."
+	self value: aCanopyBranchNode asRawValue
+]
+
+{ #category : 'target resize' }
+CanopyLeafNode >> apply: aCanopyBranchNode withTag: aTag [
+	(aCanopyBranchNode tags includes: aTag) ifTrue: [
+		self apply: aCanopyBranchNode ]
+]
+
+{ #category : 'converting' }
+CanopyLeafNode >> asRawValue [
+	^ self value
 ]
 
 { #category : 'accessing' }
