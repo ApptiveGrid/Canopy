@@ -79,14 +79,25 @@ CanopyAccessor >> readSelector: aSelector [
 
 { #category : 'evaluating' }
 CanopyAccessor >> value [
-	readSelector ifNil: [ ^ self error: 'this accessor has no read selector' ].
-	^ object perform: readSelector
+	"The raw value. Every reader outside the export path wants this one, so the holder stays
+	invisible here."
+	^ self valueHolder value
 ]
 
 { #category : 'accessing' }
 CanopyAccessor >> value: anObject [
+	"Unwrap on the way in, so the component's own write method keeps receiving a raw value
+	and never has to know about holders."
 	writeSelector ifNil: [ ^ self error: 'this accessor has no write selector' ].
-	object perform: writeSelector asMutator with: anObject
+	object perform: writeSelector asMutator with: anObject asCanopyValue value
+]
+
+{ #category : 'evaluating' }
+CanopyAccessor >> valueHolder [
+	"What the read selector answers, wrapped: a plain value becomes a CanopyValue, a holder
+	answers itself. Only the export path asks for this."
+	readSelector ifNil: [ ^ self error: 'this accessor has no read selector' ].
+	^ (object perform: readSelector) asCanopyValue
 ]
 
 { #category : 'accessing' }
