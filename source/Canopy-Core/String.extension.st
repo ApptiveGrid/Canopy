@@ -2,5 +2,5 @@ Extension { #name : 'String' }
 
 { #category : '*Canopy-Core' }
 String >> asCanopy [
-	^ self readStream asCanopyCell
+	^ self readStream asCanopyNode
 ]
