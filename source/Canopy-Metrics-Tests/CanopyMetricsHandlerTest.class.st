@@ -85,3 +85,18 @@ CanopyMetricsHandlerTest >> testHandleRequestWithConfigOnlyExportsConfiguredDoma
 	self deny: (body includesSubstring: 'beta')
 	] ensure: [ Canopy reset ]
 ]
+
+{ #category : 'tests' }
+CanopyMetricsHandlerTest >> testRegisteredSystemMetricsAreExportedUnderTheirPharoNames [
+	"What Pharo says about itself is one domain, #pharo, and a series is named after the path to
+	its node - so pharo_virtualMachine_memorySize comes out of an unconfigured handler, with
+	nothing prepended anywhere. Before, the two halves were domains of their own and the name
+	only became the deployed one because the endpoint had been told to prefix them."
+	| body |
+	[ Canopy registerSystemMetrics.
+	self assertCollection: Canopy domainNames asArray hasSameElements: #( #pharo ).
+	body := (CanopyMetricsHandler new handleRequest: nil) entity contents.
+	self assert: (body includesSubstring: 'pharo_virtualMachine_memorySize').
+	self assert: (body includesSubstring: 'pharo_image_')
+	] ensure: [ Canopy reset ]
+]

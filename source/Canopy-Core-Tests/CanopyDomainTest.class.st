@@ -120,25 +120,33 @@ CanopyDomainTest >> testRegisterDomainNamedRaisesOnCollisionAndDoesNotOverwrite 
 ]
 
 { #category : 'as yet unclassified' }
-CanopyDomainTest >> testRegisterImageMetricsRegistersOnlyImageDomain [
+CanopyDomainTest >> testRegisterImageMetricsRegistersTheImageHalfUnderPharo [
+	"What Pharo says about itself is one domain, #pharo, with the image half below it - the
+	exported name pharo_image_... is that path and nothing else."
 	[ Canopy registerImageMetrics.
-	self assert: Canopy domainNames asArray equals: #( #image ) ]
+	self assert: Canopy domainNames asArray equals: #( #pharo ).
+	self assert: (Canopy / #pharo) keys asArray equals: #( #image ) ]
 		ensure: [ Canopy reset ]
 ]
 
 { #category : 'as yet unclassified' }
 CanopyDomainTest >> testRegisterSystemMetricsRegistersImageAndVirtualMachineDomains [
 	"registerSystemMetrics is an explicit opt-in, not an automatic image-startup hook (Norbert,
-	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves."
+	2026-07-21: not everyone wants this without being asked) - a caller invokes it themselves.
+	Both halves land under the single domain #pharo, which is where the deployed names come
+	from - see Canopy class>>registerSystemMetrics."
 	[ Canopy registerSystemMetrics.
-	self assertCollection: Canopy domainNames asArray hasSameElements: #( #image #virtualMachine ) ]
+	self assert: Canopy domainNames asArray equals: #( #pharo ).
+	self assertCollection: (Canopy / #pharo) keys asArray hasSameElements: #( #image #virtualMachine ) ]
 		ensure: [ Canopy reset ]
 ]
 
 { #category : 'as yet unclassified' }
-CanopyDomainTest >> testRegisterVirtualMachineMetricsRegistersOnlyVirtualMachineDomain [
+CanopyDomainTest >> testRegisterVirtualMachineMetricsRegistersTheVirtualMachineHalfUnderPharo [
+	"See testRegisterImageMetricsRegistersTheImageHalfUnderPharo - the same for the other half."
 	[ Canopy registerVirtualMachineMetrics.
-	self assert: Canopy domainNames asArray equals: #( #virtualMachine ) ]
+	self assert: Canopy domainNames asArray equals: #( #pharo ).
+	self assert: (Canopy / #pharo) keys asArray equals: #( #virtualMachine ) ]
 		ensure: [ Canopy reset ]
 ]
 

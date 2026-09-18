@@ -11,7 +11,7 @@ Process class >> activeProcessListCanopy [
 
 { #category : '*Canopy-Metrics' }
 Process class >> canopyRegister [
-	^ (Canopy /+ #image) merge: (CanopyMappingBuilder new object: self; map: CanopyBranchNode new; build)
+	^ (Canopy /+ #pharo /+ #image) merge: (CanopyMappingBuilder new object: self; map: CanopyBranchNode new; build)
 ]
 
 { #category : '*Canopy-Metrics' }

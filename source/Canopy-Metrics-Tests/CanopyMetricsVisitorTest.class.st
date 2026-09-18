@@ -34,8 +34,8 @@ CanopyMetricsVisitorTest >> testExternalObjectMetricsHaveDistinctDescriptions [
 	| metrics tableSize objects |
 	[ ExternalSemaphoreTable canopyRegister.
 	metrics := Canopy instance.
-	tableSize := (metrics / #virtualMachine / #externalObjectTableSize) valueHolder.
-	objects := (metrics / #virtualMachine / #externalObjects) valueHolder.
+	tableSize := (metrics / #pharo / #virtualMachine / #externalObjectTableSize) valueHolder.
+	objects := (metrics / #pharo / #virtualMachine / #externalObjects) valueHolder.
 	self deny: tableSize description equals: objects description ]
 		ensure: [ Canopy reset ]
 ]
@@ -44,11 +44,13 @@ CanopyMetricsVisitorTest >> testExternalObjectMetricsHaveDistinctDescriptions [
 CanopyMetricsVisitorTest >> testExternalObjectMetricsLiveUnderTheVirtualMachine [
 	"Parity with what the servers export today: pharo-metrics declares both under #virtualMachine
 	(ExternalSemaphoreTable's pragmas say so), and external semaphores are a VM concept. Canopy
-	registered them under #image, which renamed two series without saying a word."
+	registered them under #image, which renamed two series without saying a word. Both halves of
+	what Pharo says about itself sit under the domain #pharo, which is where the exported name
+	pharo_virtualMachine_externalObjects comes from."
 	[ ExternalSemaphoreTable canopyRegister.
-	self assert: (Canopy instance / #virtualMachine / #externalObjects) notNil.
-	self assert: (Canopy instance / #virtualMachine / #externalObjectTableSize) notNil.
-	self should: [ Canopy instance / #image ] raise: NotFound ]
+	self assert: (Canopy instance / #pharo / #virtualMachine / #externalObjects) notNil.
+	self assert: (Canopy instance / #pharo / #virtualMachine / #externalObjectTableSize) notNil.
+	self should: [ Canopy instance / #pharo / #image ] raise: NotFound ]
 		ensure: [ Canopy reset ]
 ]
 
