@@ -41,6 +41,7 @@ Canopy class >> registerDomainNamed: aSymbol with: aNode [
 
 { #category : 'domains' }
 Canopy class >> registerImageMetrics [
+	"Lands under the #pharo domain, see registerSystemMetrics."
 	SmalltalkImage canopyRegister.
 	Process canopyRegister.
 	File canopyRegister
@@ -48,14 +49,18 @@ Canopy class >> registerImageMetrics [
 
 { #category : 'domains' }
 Canopy class >> registerSystemMetrics [
-	"Convenience wrapper - registers both system-metrics domains. Not wired to any
-	automatic image-startup hook - a caller decides when (or whether) to invoke this."
+	"Everything Pharo says about itself, under the domain #pharo. That is where the exported
+	names pharo_image_... and pharo_virtualMachine_... come from: a metric is named after where
+	it hangs, so the tree says it once instead of the endpoint renaming it a second time.
+	Not wired to any automatic image-startup hook - a caller decides when (or whether) to
+	invoke this."
 	self registerImageMetrics.
 	self registerVirtualMachineMetrics
 ]
 
 { #category : 'domains' }
 Canopy class >> registerVirtualMachineMetrics [
+	"Lands under the #pharo domain, see registerSystemMetrics."
 	VirtualMachine canopyRegister.
 	^ ExternalSemaphoreTable canopyRegister
 ]

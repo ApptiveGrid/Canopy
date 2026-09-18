@@ -2,7 +2,7 @@ Extension { #name : 'VirtualMachine' }
 
 { #category : '*Canopy-Metrics' }
 VirtualMachine class >> canopyRegister [
-	^ Canopy registerDomainNamed: #virtualMachine with: (CanopyMappingBuilder new object: Smalltalk vm; map: CanopyBranchNode new; build)
+	^ (Canopy /+ #pharo /+ #virtualMachine) merge: (CanopyMappingBuilder new object: Smalltalk vm; map: CanopyBranchNode new; build)
 ]
 
 { #category : '*Canopy-Metrics' }
