@@ -5,7 +5,9 @@ Class {
 		'requests',
 		'responses',
 		'duration',
-		'registration'
+		'registration',
+		'includePrefixes',
+		'excludePrefixes'
 	],
 	#classInstVars : [
 		'instance'
@@ -40,6 +42,20 @@ CanopyZincCounter class >> uninstall [
 	^ self instance uninstall
 ]
 
+{ #category : 'configuring' }
+CanopyZincCounter >> addExcludePrefix: aString [
+	"Do not count requests to this path. The scrape endpoint itself is the obvious candidate -
+	left alone, a counter of HTTP requests counts the requests that read it."
+	excludePrefixes add: aString
+]
+
+{ #category : 'configuring' }
+CanopyZincCounter >> addIncludePrefix: aString [
+	"Count only requests to this path. As soon as one is named, everything else is ignored -
+	the deployed servers narrow the count to '/api' this way."
+	includePrefixes add: aString
+]
+
 { #category : 'counting' }
 CanopyZincCounter >> adjustDuration: aDuration [
 	duration ifNil: [ ^ duration := aDuration ].
@@ -61,7 +77,19 @@ CanopyZincCounter >> durationCanopy [
 ]
 
 { #category : 'counting' }
+CanopyZincCounter >> countsRequestTo: aUrl [
+	"Named prefixes narrow what is counted, excluded ones drop out of whatever is left. Both
+	lists are honoured; with neither, everything counts."
+	| pfad |
+	pfad := aUrl pathPrintString.
+	(excludePrefixes anySatisfy: [ :each | pfad beginsWith: each ]) ifTrue: [ ^ false ].
+	includePrefixes ifEmpty: [ ^ true ].
+	^ includePrefixes anySatisfy: [ :each | pfad beginsWith: each ]
+]
+
+{ #category : 'counting' }
 CanopyZincCounter >> handleAnnouncement: anAnnouncement [
+	(self countsRequestTo: anAnnouncement url) ifFalse: [ ^ self ].
 	self increaseRequests.
 	self increaseStatusCode: anAnnouncement responseCode.
 	self adjustDuration: anAnnouncement duration
@@ -85,6 +113,8 @@ CanopyZincCounter >> initialize [
 	requests := 0.
 	duration := 0.
 	responses := Dictionary new.
+	includePrefixes := OrderedCollection new.
+	excludePrefixes := OrderedCollection new.
 	self initializeResponses
 ]
 
