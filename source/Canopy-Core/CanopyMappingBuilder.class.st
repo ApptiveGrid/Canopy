@@ -38,15 +38,23 @@ CanopyMappingBuilder >> build [
 
 { #category : 'as yet unclassified' }
 CanopyMappingBuilder >> buildComplexProperties [
-	| pragmas |
-	pragmas := Pragma
-		allNamed: #canopyBranch
-		from: object class
-		to: Object.
-	(pragmas size = 1) ifTrue: [
-		object
-			perform: pragmas first selector asMutator
-			with: self ]
+	"Every method that carries the marker, each sent once, in the order the pragmas come in.
+
+	This used to run only when there was exactly one and do nothing at all otherwise, with no
+	else and no complaint: a subclass that added a branch method of its own lost the one it
+	inherited as well, and the whole composed half of the tree simply was not there.
+
+	Sent by the method's own selector rather than by #canopyBranch: derived from the pragma
+	name. They are the same for every declaration there is today, but only one of the two is
+	an answer to the question 'which method did I mark'. An override is in the list twice,
+	the subclass's and the superclass's, and both name that same selector - so taking distinct
+	selectors runs the override once and never the method it replaces."
+	| selectors |
+	selectors := OrderedCollection new.
+	(Pragma allNamed: #canopyBranch from: object class to: Object) do: [ :each |
+		(selectors includes: each methodSelector) ifFalse: [
+			selectors add: each methodSelector ] ].
+	selectors do: [ :each | object perform: each with: self ]
 ]
 
 { #category : 'as yet unclassified' }

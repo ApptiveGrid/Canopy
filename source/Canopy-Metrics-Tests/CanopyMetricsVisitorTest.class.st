@@ -290,3 +290,28 @@ CanopyMetricsVisitorTest >> testExportWithoutPrefixWritesNameAsIs [
 	self assert: (output includesSubstring: 'apptiveGrid_memorySize').
 	self deny: (output includesSubstring: 'pharo')
 ]
+
+{ #category : 'as yet unclassified' }
+CanopyMetricsVisitorTest >> testALeafThatRaisesCostsThatLeafAndNotTheScrape [
+	"Reading a leaf is a live call into a component, and one that fails used to end the export
+	where it stood: the error left #format: altogether, so the answer was not a short scrape but
+	no scrape - which looks like a server that stopped reporting rather than like one value that
+	could not be read.
+
+	Which of the two the tree hands the visitor first does not matter, and the test does not
+	depend on it: the old code raised out of #format: whichever way round they came."
+	| tree output |
+	tree := CanopyBranchNode new.
+	tree at: #brokenReading put: (CanopyAccessor new
+		object: CanopyRaisingLeafExample new;
+		readSelector: #brokenReading;
+		yourself).
+	tree at: #workingReading put: (CanopyAccessor reading: [
+		CanopyMetric new
+			type: #gauge;
+			description: 'a reading that answers';
+			value: 42 ]).
+	output := CanopyPrometheusVisitor new format: tree.
+	self deny: (output includesSubstring: 'brokenReading').
+	self assert: (output includesSubstring: 'workingReading 42 ')
+]

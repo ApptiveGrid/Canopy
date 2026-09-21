@@ -184,3 +184,14 @@ CanopyAccessorTest >> testTwoAccessorsThatDeclareNothingStillConflict [
 	one case the repeat-tolerance above must not swallow."
 	self should: [ CanopyAccessor new merge: CanopyAccessor new ] raise: Error
 ]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testEveryBranchMethodContributes [
+	"Two methods carrying <canopyBranch> and both of them build. Until 2026-09-21 the builder
+	ran the marked method only when there was exactly one, so a second one did not add a
+	branch - it removed the first, silently and without an else."
+	| tree |
+	tree := CanopyTwoBranchExample new canopyMapping.
+	self assert: (tree / #first) value equals: 1.
+	self assert: (tree / #second) value equals: 2
+]

@@ -79,9 +79,21 @@ CanopyPrometheusVisitor >> visitCell: aCanopyCell [
 CanopyPrometheusVisitor >> visitMetric: aNode [
 	"Ask the value what it contributes and write one line per reading. A value that is not a
 	metric answers nothing, so nothing is written - not even the HELP and TYPE header. That is
-	why a config value in an exported tree now costs no output instead of ending the scrape."
+	why a config value in an exported tree now costs no output instead of ending the scrape.
+
+	And a leaf that raises while it is read costs that leaf rather than the scrape. Reading is
+	a live call into a component - the servers' values are blocks, AGSoilMetrics reduces over
+	every open database - and one of them failing used to end the export where it stood, so
+	everything after it in the tree silently left the scrape as well. Nothing is written for it
+	now, which reads as a gap in one series instead of a flat line in all of them.
+
+	Asking is what evaluates, so the guard sits on the ask rather than around the writing: once
+	the holder is in hand the readings are too, and the stream cannot be left carrying a header
+	whose lines never came."
 	| holder header |
-	holder := aNode valueHolder.
+	holder := [ aNode valueHolder ]
+		on: Error
+		do: [ :error | ^ self ].
 	header := false.
 	holder readingsDo: [ :labels :value |
 		header ifFalse: [
