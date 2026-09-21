@@ -177,8 +177,13 @@ CanopyDomainTest >> testUseNewInstanceDuringPutsThePreviousTreeBack [
 	"What a test needs that has to register domains of its own, and what #reset alone does not
 	give: the tree that was there before comes back. These test classes travel into the server
 	images, and AGTestRunnerHandler runs any suite in the image it is asked for over /health -
-	a #reset there takes the tree the server is serving and nothing says so."
+	a #reset there takes the tree the server is serving and nothing says so.
+
+	Reset at both ends, and the leading one is not decoration: this test has to put something
+	into the ambient tree to have something to get back, and the very leak it would otherwise
+	leave behind is what it exists to prevent."
 	| before during |
+	[ Canopy reset.
 	before := Canopy instance.
 	before at: #somethingTheServerServes put: (CanopyCell new value: 1).
 	Canopy useNewInstanceDuring: [
@@ -187,5 +192,6 @@ CanopyDomainTest >> testUseNewInstanceDuringPutsThePreviousTreeBack [
 	self deny: during identicalTo: before.
 	self assert: Canopy instance identicalTo: before.
 	self assert: (Canopy / #somethingTheServerServes) value equals: 1.
-	self deny: (Canopy domainNames includes: #mine)
+	self deny: (Canopy domainNames includes: #mine) ]
+		ensure: [ Canopy reset ]
 ]
