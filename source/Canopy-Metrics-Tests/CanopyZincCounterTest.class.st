@@ -90,3 +90,25 @@ CanopyZincCounterTest >> testRegisterZincMetricsRegistersZincDomainWithExpectedV
 	self assert: (output includesSubstring: '# HELP zinc_duration Average duration of requests') ]
 		ensure: [ CanopyZincCounter instance uninstall. Canopy reset. CanopyZincCounter reset ]
 ]
+
+{ #category : 'as yet unclassified' }
+CanopyZincCounterTest >> announcerSubscriptionsOfTheCounter [
+	"The one place this test reaches into the announcer. What it is really asking is how often
+	the counter is subscribed, and the announcer is the only one who knows."
+	^ ZnLogEvent announcer subscriptions subscriptions
+		select: [ :each | each subscriber == CanopyZincCounter instance ]
+]
+
+{ #category : 'as yet unclassified' }
+CanopyZincCounterTest >> testRegisterZincMetricsTwiceSubscribesOnce [
+	"Both halves of a second registration used to go wrong, and only one of them said so: the
+	domain registration raised, and before it did, the counter had already subscribed a second
+	time - so a retry, or a caller that swallowed the error, counted every request twice from
+	then on."
+	[ CanopyZincCounter reset.
+	Canopy registerZincMetrics.
+	self shouldnt: [ Canopy registerZincMetrics ] raise: Error.
+	self assert: self announcerSubscriptionsOfTheCounter size equals: 1.
+	self assert: Canopy domainNames asArray equals: #( #zinc ) ]
+		ensure: [ CanopyZincCounter instance uninstall. Canopy reset. CanopyZincCounter reset ]
+]

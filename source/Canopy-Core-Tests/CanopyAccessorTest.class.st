@@ -146,3 +146,41 @@ CanopyAccessorTest >> testValueWriteRaisesControlledErrorWhenNoWriteSelector [
 	accessor now raises the same kind of controlled error for the opposite direction."
 	self should: [ CanopyAccessor new value: 5 ] raise: Error
 ]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testTheSameDeclarationMergedAgainIsNotAConflict [
+	"The narrow case that lets a class register itself twice: same object, same selectors.
+	There is nothing to merge, so nothing happens - as opposed to the two cases below, where
+	two different things want the same place and the conflict is real."
+	| object left right |
+	object := CanopyRootTestObject new.
+	left := CanopyAccessor new object: object; readSelector: #one; yourself.
+	right := CanopyAccessor new object: object; readSelector: #one; yourself.
+	self shouldnt: [ left merge: right ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testTwoAccessorsOnDifferentObjectsStillConflict [
+	"Two objects that are equal but not the same declare two different things."
+	| left right |
+	left := CanopyAccessor new object: CanopyRootTestObject new; readSelector: #one; yourself.
+	right := CanopyAccessor new object: CanopyRootTestObject new; readSelector: #one; yourself.
+	self should: [ left merge: right ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testTwoAccessorsReadingThroughDifferentSelectorsStillConflict [
+	| object left right |
+	object := CanopyRootTestObject new.
+	left := CanopyAccessor new object: object; readSelector: #one; yourself.
+	right := CanopyAccessor new object: object; readSelector: #printString; yourself.
+	self should: [ left merge: right ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyAccessorTest >> testTwoAccessorsThatDeclareNothingStillConflict [
+	"Two empty accessors are not one declaration made twice - they are no declaration at all,
+	and CanopyMergeTest has said so since 2026-07-21. Written down here too, because it is the
+	one case the repeat-tolerance above must not swallow."
+	self should: [ CanopyAccessor new merge: CanopyAccessor new ] raise: Error
+]

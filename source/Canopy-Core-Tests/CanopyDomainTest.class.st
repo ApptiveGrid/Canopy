@@ -142,6 +142,20 @@ CanopyDomainTest >> testRegisterSystemMetricsRegistersImageAndVirtualMachineDoma
 ]
 
 { #category : 'as yet unclassified' }
+CanopyDomainTest >> testRegisterSystemMetricsTwiceLeavesTheSameTree [
+	"An image can reach its setup a second time - a REPL that stops the server and starts it
+	again, a test that exercises the deployment path. This used to raise 'conflict': every
+	class merges its declarations into the same node, and a leaf bound to a live object
+	refused to merge with a second one, even when the second one said exactly the same."
+	[ Canopy registerSystemMetrics.
+	Canopy registerSystemMetrics.
+	self assert: Canopy domainNames asArray equals: #( #pharo ).
+	self assertCollection: (Canopy / #pharo) keys asArray hasSameElements: #( #image #virtualMachine ).
+	self assert: (Canopy / #pharo / #virtualMachine / #memorySize) value isNumber ]
+		ensure: [ Canopy reset ]
+]
+
+{ #category : 'as yet unclassified' }
 CanopyDomainTest >> testRegisterVirtualMachineMetricsRegistersTheVirtualMachineHalfUnderPharo [
 	"See testRegisterImageMetricsRegistersTheImageHalfUnderPharo - the same for the other half."
 	[ Canopy registerVirtualMachineMetrics.
@@ -156,4 +170,22 @@ CanopyDomainTest >> testSlashOnLeafRaisesError [
 	root := Canopy new.
 	root at: #leaf put: (CanopyCell new value: 42).
 	self should: [ (root / #leaf) / #anything ] raise: Error
+]
+
+{ #category : 'as yet unclassified' }
+CanopyDomainTest >> testUseNewInstanceDuringPutsThePreviousTreeBack [
+	"What a test needs that has to register domains of its own, and what #reset alone does not
+	give: the tree that was there before comes back. These test classes travel into the server
+	images, and AGTestRunnerHandler runs any suite in the image it is asked for over /health -
+	a #reset there takes the tree the server is serving and nothing says so."
+	| before during |
+	before := Canopy instance.
+	before at: #somethingTheServerServes put: (CanopyCell new value: 1).
+	Canopy useNewInstanceDuring: [
+		during := Canopy instance.
+		Canopy registerDomainNamed: #mine with: CanopyBranchNode new ].
+	self deny: during identicalTo: before.
+	self assert: Canopy instance identicalTo: before.
+	self assert: (Canopy / #somethingTheServerServes) value equals: 1.
+	self deny: (Canopy domainNames includes: #mine)
 ]

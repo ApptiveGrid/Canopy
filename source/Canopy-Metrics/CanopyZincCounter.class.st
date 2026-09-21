@@ -18,8 +18,17 @@ Class {
 
 { #category : 'installing' }
 CanopyZincCounter class >> canopyRegister [
+	"Repeatable, because an image can run its setup a second time - a REPL that stops and
+	starts the server again, a test that exercises it. Both halves used to fail there: the
+	subscription was made twice, and the domain registration then raised.
+
+	The strictness stays where it belongs. #registerDomainNamed:with: still refuses a second
+	owner for #zinc, and the merge below still answers 'conflict' when what hangs under
+	#zinc is not this counter's own declaration."
 	self install.
-	^ Canopy registerDomainNamed: #zinc with: (CanopyMappingBuilder new object: self instance; map: CanopyBranchNode new; build)
+	^ (Canopy instance at: #zinc ifAbsent: [ nil ])
+		ifNil: [ Canopy registerDomainNamed: #zinc with: self instance canopyMapping ]
+		ifNotNil: [ :domain | domain merge: self instance canopyMapping ]
 ]
 
 { #category : 'installing' }
@@ -130,7 +139,11 @@ CanopyZincCounter >> initializeResponses [
 
 { #category : 'installing' }
 CanopyZincCounter >> install [
-	registration := ZnLogEvent announcer
+	"Once. The announcer takes a second subscription without a word and then hands every
+	request to both of them, so the counter quietly counts double - the silent half of a
+	setup that ran again."
+	registration ifNotNil: [ ^ registration ].
+	^ registration := ZnLogEvent announcer
 		when: ZnSimplifiedServerTransactionEvent
 		do: [ :ann | self handleAnnouncement: ann ]
 		for: self
@@ -167,5 +180,7 @@ CanopyZincCounter >> responsesCanopy [
 
 { #category : 'installing' }
 CanopyZincCounter >> uninstall [
-	ZnLogEvent announcer unsubscribe: self
+	"Let go of the subscription and say so, or #install would refuse to make a new one."
+	ZnLogEvent announcer unsubscribe: self.
+	registration := nil
 ]
