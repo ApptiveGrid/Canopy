@@ -35,6 +35,22 @@ CanopyAccessor >> asRawValue [
 	^ readSelector ifNotNil: [ self value ]
 ]
 
+{ #category : 'testing' }
+CanopyAccessor >> declaresSameAs: aNode [
+	"Same object, same way in and same way out. Three things this deliberately does not say
+	yes to: an accessor that declares nothing at all - no object, or no selector in either
+	direction - is not the same declaration as another empty one, it is no declaration, and
+	two of them meeting is the oddity CanopyMergeTest has guarded since 2026-07-21. And the
+	object is compared by identity, because two equal-but-distinct objects are two different
+	things to read from."
+	^ object notNil
+		and: [ (readSelector notNil or: [ writeSelector notNil ])
+		and: [ (aNode isKindOf: CanopyAccessor)
+		and: [ aNode object == object
+		and: [ aNode readSelector = readSelector
+		and: [ aNode writeSelector = writeSelector ] ] ] ] ]
+]
+
 { #category : 'initialization' }
 CanopyAccessor >> initializeFromPragma: aPragma [
 	"The direction comes from the arity of the declaring method: one that takes a value can only
@@ -51,6 +67,23 @@ CanopyAccessor >> initializeFromPragma: aPragma [
 			writeSelector := aPragma method selector ]
 ]
 
+{ #category : 'actions' }
+CanopyAccessor >> mergeInto: aNode [
+	"A leaf bound to a live object still cannot be merged with another one - that is what
+	CanopyLeafNode says and it stays true. What this adds is narrower: a leaf that declares
+	the very same thing, the same object read and written through the same selectors, is not
+	a second declaration but the same one again. Then there is nothing to merge, and saying
+	so lets a class register itself twice without the second time failing - which is what an
+	image does when its setup runs again."
+	(self declaresSameAs: aNode) ifTrue: [ ^ aNode ].
+	^ super mergeInto: aNode
+]
+
+{ #category : 'accessing' }
+CanopyAccessor >> object [
+	^ object
+]
+
 { #category : 'accessing' }
 CanopyAccessor >> object: anObject [
 	object := anObject
@@ -63,6 +96,11 @@ CanopyAccessor >> printOn: aStream [
 		aStream << '['.
 		self value printOn: aStream.
 		aStream << ']' ]
+]
+
+{ #category : 'accessing' }
+CanopyAccessor >> readSelector [
+	^ readSelector
 ]
 
 { #category : 'accessing' }
@@ -91,6 +129,11 @@ CanopyAccessor >> valueHolder [
 	answers itself. Only the export path asks for this."
 	readSelector ifNil: [ ^ self error: 'this accessor has no read selector' ].
 	^ (object perform: readSelector) asCanopyValue
+]
+
+{ #category : 'accessing' }
+CanopyAccessor >> writeSelector [
+	^ writeSelector
 ]
 
 { #category : 'accessing' }

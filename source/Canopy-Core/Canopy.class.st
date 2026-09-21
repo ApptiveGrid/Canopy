@@ -34,6 +34,13 @@ Canopy class >> instance [
 		instance := self new  ]
 ]
 
+{ #category : 'accessing' }
+Canopy class >> instance: aCanopy [
+	"Put a tree back that #useNewInstanceDuring: took away. Nothing else has business
+	replacing the singleton - #reset is how you let go of one."
+	instance := aCanopy
+]
+
 { #category : 'domains' }
 Canopy class >> registerDomainNamed: aSymbol with: aNode [
 	^ self instance registerDomainNamed: aSymbol with: aNode
@@ -76,6 +83,22 @@ Canopy class >> registerZincMetrics [
 { #category : 'initialization' }
 Canopy class >> reset [ 
 	instance := nil 
+]
+
+{ #category : 'initialization' }
+Canopy class >> useNewInstanceDuring: aBlock [
+	"Evaluate aBlock against a fresh, empty tree and put the previous one back afterwards.
+
+	For a test that has to register domains of its own. #reset alone was what such a test
+	used to do, and it is right in an image that exists for the test run - but these test
+	classes travel into the server images, and AGTestRunnerHandler runs any TestCase suite
+	in the image it is asked for over /health. There #reset takes the tree the server is
+	serving: #instance lazily builds an empty one, setupMetrics never runs again, and
+	/metrics answers 200 with an empty body. A scrape cannot tell that from silence."
+	| previous |
+	previous := instance.
+	instance := self new.
+	^ aBlock ensure: [ instance := previous ]
 ]
 
 { #category : 'domains' }
