@@ -22,7 +22,9 @@ CanopyMetricMap >> labelName: aSymbol [
 
 { #category : 'enumerating' }
 CanopyMetricMap >> readingsDo: aBlock [
-	"One reading per key: the labels this metric carries, plus the key under the declared name."
+	"One reading per key: the labels this metric carries, plus the key under the declared name.
+	None at all when there is no map, for the reason CanopyMetric>>readingsDo: gives"
+	self value ifNil: [ ^ self ].
 	self value keysAndValuesDo: [ :key :each |
 		aBlock
 			value: (self labels copy
