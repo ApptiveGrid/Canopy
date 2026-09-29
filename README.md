@@ -439,7 +439,8 @@ while it is read is left out, and the rest of the scrape continues.
 
 `CanopyBrowseHtmlHandler` wraps it. Requests without `text/html` in `Accept` are passed through
 unchanged. A browser gets a table per branch, with links into child branches and an editable field
-with a Save button per leaf.
+with a Save button per leaf. A dropdown below the title reloads the page every 1 to 60 seconds; the
+choice is kept in the browser, and no reload happens while an input has the focus.
 
 ```smalltalk
 Canopy registerSystemMetrics.

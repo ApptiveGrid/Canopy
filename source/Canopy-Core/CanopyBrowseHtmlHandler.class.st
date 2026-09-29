@@ -45,6 +45,7 @@ CanopyBrowseHtmlHandler >> branchPageFor: node path: pathString [
 	^ String streamContents: [ :s |
 		s nextPutAll: '<!DOCTYPE html><html><body>'.
 		s nextPutAll: '<h1>/'; nextPutAll: (self htmlEscape: pathString); nextPutAll: '</h1>'.
+		s nextPutAll: self refreshControl.
 		s nextPutAll: '<table>'.
 		node keysAndValuesDo: [ :key :child |
 			| href |
@@ -97,10 +98,20 @@ CanopyBrowseHtmlHandler >> pageFor: node path: pathString [
 	^ String streamContents: [ :s |
 		s nextPutAll: '<!DOCTYPE html><html><body>'.
 		s nextPutAll: '<h1>/'; nextPutAll: (self htmlEscape: pathString); nextPutAll: '</h1>'.
+		s nextPutAll: self refreshControl.
 		s nextPutAll: '<p>Value: <code>'; nextPutAll: (self htmlEscape: currentJson); nextPutAll: '</code></p>'.
 		s nextPutAll: '<form id="f"><input id="v" value="'; nextPutAll: (self htmlEscape: currentJson); nextPutAll: '"><button type="submit">Save</button></form>'.
 		s nextPutAll: '<script>document.getElementById("f").addEventListener("submit",function(e){e.preventDefault();fetch(window.location.pathname,{method:"PUT",body:document.getElementById("v").value}).then(function(){location.reload();});});</script>'.
 		s nextPutAll: '</body></html>' ]
+]
+
+{ #category : 'private' }
+CanopyBrowseHtmlHandler >> refreshControl [
+	"A dropdown that reloads the page every n seconds, for watching metrics move. The choice is
+	kept in the browser's localStorage, so it survives the reload and a click into a child - and
+	stays with the viewer rather than with the tree. While an input has the focus the reload
+	waits for the next round, or a value being typed would be thrown away."
+	^ '<p><select id="refresh"><option value="0">Auto refresh: off</option><option value="1">every 1 s</option><option value="5">every 5 s</option><option value="10">every 10 s</option><option value="30">every 30 s</option><option value="60">every 60 s</option></select></p><script>(function(){var s=document.getElementById("refresh"),k="canopyRefresh",t;try{s.value=localStorage.getItem(k)||"0";}catch(e){}function arm(){clearTimeout(t);var n=parseInt(s.value,10);if(n>0){t=setTimeout(function(){var a=document.activeElement;if(a&&a.tagName==="INPUT"){arm();}else{location.reload();}},n*1000);}}s.addEventListener("change",function(){try{localStorage.setItem(k,s.value);}catch(e){}arm();});arm();})();</script>'
 ]
 
 { #category : 'accessing' }
