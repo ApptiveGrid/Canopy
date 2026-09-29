@@ -82,10 +82,32 @@ CanopyBrowseHtmlHandlerTest >> testHandleRequestEscapesHtmlSpecialCharactersInVa
 ]
 
 { #category : 'tests' }
+CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersAutoRefreshControlOnBranchPage [
+	"The dropdown sits right below the title, so it is the same place on every page."
+	| body |
+	[ self registerBrowseTestDomain.
+	body := (CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest' accept: 'text/html' body: nil)) entity contents.
+	self assert: (body includesSubstring: '</h1><p><select id="refresh">').
+	self assert: (body includesSubstring: '<option value="0">Auto refresh: off</option>').
+	self assert: (body includesSubstring: '<option value="5">every 5 s</option>').
+	self assert: (body includesSubstring: 'location.reload()')
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
+CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersAutoRefreshControlOnLeafPage [
+	| body |
+	[ self registerBrowseTestDomain.
+	body := (CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/a' accept: 'text/html' body: nil)) entity contents.
+	self assert: (body includesSubstring: '</h1><p><select id="refresh">')
+	] ensure: [ Canopy reset ]
+]
+
+{ #category : 'tests' }
 CanopyBrowseHtmlHandlerTest >> testHandleRequestRendersHtmlPageForLeafWhenAcceptIsHtml [
 	[ self registerBrowseTestDomain.
 	self assert: (CanopyBrowseHtmlHandler new handleRequest: (self requestFor: #GET url: 'http://localhost/browseTest/a' accept: 'text/html' body: nil)) entity contents
-		equals: '<!DOCTYPE html><html><body><h1>/browseTest/a</h1><p>Value: <code>&quot;x&quot;</code></p><form id="f"><input id="v" value="&quot;x&quot;"><button type="submit">Save</button></form><script>document.getElementById("f").addEventListener("submit",function(e){e.preventDefault();fetch(window.location.pathname,{method:"PUT",body:document.getElementById("v").value}).then(function(){location.reload();});});</script></body></html>'
+		equals: '<!DOCTYPE html><html><body><h1>/browseTest/a</h1>' , CanopyBrowseHtmlHandler new refreshControl , '<p>Value: <code>&quot;x&quot;</code></p><form id="f"><input id="v" value="&quot;x&quot;"><button type="submit">Save</button></form><script>document.getElementById("f").addEventListener("submit",function(e){e.preventDefault();fetch(window.location.pathname,{method:"PUT",body:document.getElementById("v").value}).then(function(){location.reload();});});</script></body></html>'
 	] ensure: [ Canopy reset ]
 ]
 
