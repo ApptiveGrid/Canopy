@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'parent',
 		'tags',
-		'labels'
+		'labels',
+		'description'
 	],
 	#category : 'Canopy-Core',
 	#package : 'Canopy-Core'
@@ -26,6 +27,19 @@ CanopyNode >> allKeys [
 	^ parent
 		ifNotNil: [ parent allKeys , { self key } ]
 		ifNil: [ #() ]
+]
+
+{ #category : 'accessing' }
+CanopyNode >> description [
+	"What this node is for, declared where the tree is built. Branches, cells and accessors all
+	carry one. Nil when nobody said; the export then falls back to what the value holder of a
+	leaf brings along, and last to the key."
+	^ description
+]
+
+{ #category : 'accessing' }
+CanopyNode >> description: aString [
+	description := aString
 ]
 
 { #category : 'accessing' }
