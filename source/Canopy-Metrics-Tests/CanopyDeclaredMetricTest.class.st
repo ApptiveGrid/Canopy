@@ -26,6 +26,20 @@ CanopyDeclaredMetricTest >> setUp [
 ]
 
 { #category : 'tests' }
+CanopyDeclaredMetricTest >> testTheNodeDescriptionBeatsTheOneOfTheHolder [
+	"The node is the declaration made where the tree is built, the holder only what the component
+	brings along when it is read - so the node wins, and the holder answers only where the node
+	says nothing."
+	| described |
+	branch counter: #requests description: 'from the holder' reading: [ 3 ].
+	branch counter: #errors description: 'from the holder' reading: [ 1 ].
+	described := branch / #requests.
+	described description: 'from the node'.
+	self assert: (self scrape includesSubstring: '# HELP server_requests from the node').
+	self assert: (self scrape includesSubstring: '# HELP server_errors from the holder')
+]
+
+{ #category : 'tests' }
 CanopyDeclaredMetricTest >> testACounterIsWrittenAsOne [
 	branch counter: #requests description: 'requests served' reading: [ 3 ].
 	self assert: (self scrape includesSubstring: '# TYPE server_requests counter').

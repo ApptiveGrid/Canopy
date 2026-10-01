@@ -112,7 +112,8 @@ CanopyPrometheusVisitor >> writeHelpLine: aNode holder: aMetric [
 		nextPutAll: '# HELP ';
 		nextPutAll: (self convertMetricName: aNode);
 		nextPutAll: ' '.
-	stream nextPutAll: (aMetric description ifNil: [ aNode key asString ]).
+	stream nextPutAll: (aNode description
+		ifNil: [ aMetric description ifNil: [ aNode key asString ] ]).
 	stream nextPut: Character linefeed
 ]
 
