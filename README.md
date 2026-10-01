@@ -9,6 +9,9 @@ declare their part of the tree with pragmas, so they never depend on a particula
 format or metrics library, and the configuration file does not have to mirror the structure of
 the components.
 
+The thinking behind it is in the blog post
+[Canopy: I have global values](https://norbert.hartl.name/blog/2026-10-01_canopy-i-have-global-values.html).
+
 - [Installation](#installation)
 - [Packages](#packages)
 - [Concepts](#concepts)
@@ -19,6 +22,7 @@ the components.
 - [Merge and apply](#merge-and-apply)
 - [Tags](#tags)
 - [Labels](#labels)
+- [Descriptions](#descriptions)
 - [Metrics](#metrics)
 - [Prometheus export](#prometheus-export)
 - [Browsing and editing over HTTP](#browsing-and-editing-over-http)
@@ -84,14 +88,14 @@ Canopy (singleton, is a CanopyBranchNode)
 
 | Class | Role |
 |---|---|
-| `CanopyNode` | abstract node: parent, tags, labels |
+| `CanopyNode` | abstract node: parent, tags, labels, description |
 | `CanopyBranchNode` | a node with named children |
 | `CanopyLeafNode` | abstract leaf |
 | `CanopyCell` | a leaf holding a raw value from a source, e.g. a JSON file |
 | `CanopyAccessor` | a leaf bound to a live object through a read selector, a write selector, or both |
 | `Canopy` | the singleton root; its top-level children are the *domains* |
 | `CanopyMappingBuilder` | builds a component's subtree from its pragmas |
-| `CanopyValueHolder` | abstract holder around a value read from an accessor |
+| `CanopyValueHolder` | abstract holder around a value read from an accessor; can carry a description and labels of its own |
 | `CanopyValue` | the plain holder: a value and nothing else |
 | `CanopyMetric` / `CanopyMetricMap` | holders that also carry what a Prometheus line needs (`Canopy-Metrics`) |
 | `CanopyVisitor` | minimal visitor base, `CanopyPrometheusVisitor` builds on it |
@@ -298,6 +302,21 @@ an inherited one. One label at the root reaches every metric in the image:
 ```smalltalk
 Canopy instance labelAt: #stage put: 'production'.
 ```
+
+## Descriptions
+
+Every node can carry a description, a sentence saying what it is for: branches, cells and
+accessors alike. A value holder can carry one as well, which is what a component brings along when
+a pragma method answers a `CanopyMetric` with `description:`. The description of the node wins; the
+holder's is the fallback.
+
+```smalltalk
+Canopy registerZincMetrics.
+(Canopy / #zinc / #httpRequests) description: 'Requests the server has answered'.
+```
+
+The Prometheus export writes it as the `# HELP` line. If neither the node nor the holder has one,
+the line falls back to the key.
 
 ## Metrics
 
